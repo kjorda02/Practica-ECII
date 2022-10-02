@@ -14,7 +14,7 @@ PROJPOSY    DS.W    1   ; PROJECTILE Y COORDINATE
 
 ; --- SCOREBOARD RELATED VARIABLES ---------------------------------------------
 
-SHHEALTH    DS.W    1   ; SHIP HEALTH
+SHIPHLTH    DS.W    1   ; SHIP HEALTH
 PLASCORE    DS.W    1   ; PLAYER SCORE
 
 *~Font name~Fixedsys~

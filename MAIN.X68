@@ -14,8 +14,11 @@
     INCLUDE "SCORE.X68"
     
 START:
-    
+
 ; --- INITIALIZATION -----------------------------------------------------------
+    JSR SYSINIT
+    JSR SHIPINIT
+    JSR SCOINIT
 
 .LOOP
 
@@ -25,18 +28,27 @@ START:
 
 ; UPDATE GAME LOGIC
 
+    JSR SHIPUPD
+    JSR PROJUPD
+    JSR SCOUPD
+
 ; --- SYNC ---------------------------------------------------------------------
 
 ; --- PLOT ---------------------------------------------------------------------
 
+    JSR SCOPLOT
+    JSR SHIPPLOT
+    JSR PROJPLOT
+
     BRA     .LOOP
     
-    SIMHALT             ; halt simulator
+    SIMHALT
     
     INCLUDE "VARS.X68"
     INCLUDE "SYSVARS.X68"
 
-    END    START        ; last line of source
+    END    START
+
 
 *~Font name~Fixedsys~
 *~Font size~18~
