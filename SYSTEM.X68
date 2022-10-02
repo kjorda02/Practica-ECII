@@ -1,12 +1,14 @@
 * ==============================================================================
-;                   SYSTEM CONSTANTS
+;                                   SYSTEM
 * ==============================================================================
 
-; --- SCREEN RELATED CONSTANTS -------------------------------------------------
-
-SCRWIDTH    EQU     640     ; SCREEN WIDTH
-SCRHEIGH    EQU     480     ; SCREEN HEIGHT
-
+SYSINIT
+; INITIALIZE SYSTEM
+; INPUT    :
+; OUTPUT   :
+; MODIFIES :
+; ------------------------------------------------------------------------------
+            RTS
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~
