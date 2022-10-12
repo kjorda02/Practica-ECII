@@ -12,7 +12,7 @@
     INCLUDE "SHIP.X68"
     INCLUDE "PROJECTILE.X68"
     INCLUDE "SCORE.X68"
-    
+    DS.W    1   ; WORD ALIGNMENT
 START:
 
 ; --- INITIALIZATION -----------------------------------------------------------
@@ -25,6 +25,7 @@ START:
 ; --- UPDATE -------------------------------------------------------------------
 
 ; READ INPUT DEVICES
+    TRAP #1
 
 ; UPDATE GAME LOGIC
 
@@ -33,12 +34,18 @@ START:
     JSR SCOUPD
 
 ; --- SYNC ---------------------------------------------------------------------
+    ; THE FOLLOWING SYNC STRATEGY IS ***WRONG***
+    MOVE.B  #23,D0
+    MOVE.L  #3,D1
+    TRAP    #15
 
 ; --- PLOT ---------------------------------------------------------------------
 
     JSR SCOPLOT
     JSR SHIPPLOT
     JSR PROJPLOT
+    
+    TRAP    #0  ; UPDATE SCREEN
 
     BRA     .LOOP
     
