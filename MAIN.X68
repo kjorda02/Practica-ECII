@@ -12,6 +12,7 @@
     INCLUDE "SHIP.X68"
     INCLUDE "PROJECTILE.X68"
     INCLUDE "SCORE.X68"
+    INCLUDE "RCTDATA.X68"
     DS.W    1   ; WORD ALIGNMENT
 START:
 
@@ -55,6 +56,7 @@ START:
     INCLUDE "SYSVARS.X68"
 
     END    START
+
 
 
 *~Font name~Fixedsys~
