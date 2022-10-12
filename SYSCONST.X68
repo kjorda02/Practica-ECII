@@ -4,8 +4,8 @@
 
 ; --- SCREEN RELATED CONSTANTS -------------------------------------------------
 
-SCRWIDTH    EQU     640     ; SCREEN WIDTH
-SCRHEIGH    EQU     480     ; SCREEN HEIGHT
+SCRWIDTH    EQU     640*2     ; SCREEN WIDTH
+SCRHEIGH    EQU     480*2     ; SCREEN HEIGHT
 
 ; --- KEYCODES -----------------------------------------------------------------
 
@@ -17,6 +17,7 @@ KBDFIRE1    EQU ' '
 KBDFIRE2    EQU 'M'
 KBDFIRE3    EQU $10 ; SHIFT
 KBDPAUSE    EQU 'P'
+
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~

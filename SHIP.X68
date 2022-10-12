@@ -11,6 +11,8 @@ SHIPINIT
 ; ------------------------------------------------------------------------------
     MOVE.W  #SCRHEIGH/2,(SHIPPOSY)
     MOVE.W  #SCRWIDTH/2,(SHIPPOSX)
+    CLR.W   (SHIPVELX)
+    CLR.W   (SHIPVELY)
     RTS
             
 ; ------------------------------------------------------------------------------
@@ -20,8 +22,33 @@ SHIPUPD
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-    ADD.W   #1,(SHIPPOSX)
-    RTS
+        
+        ; UPDATE THE VELOCITY BASED ON THE KEYS CURRENTLY PRESSED
+        MOVE.B  (KBDVAL),D0
+        BTST.L  #3,D0   ; TEST DOWN KEY
+        BEQ RIGHT
+        ADDQ.W  #1,(SHIPVELY)
+        
+RIGHT:  BTST.L  #2,D0   ; TEST RIGHT KEY
+        BEQ UP
+        ADDQ.W  #1,(SHIPVELX)
+
+UP:     BTST.L  #1,D0   ; TEST UP KEY
+        BEQ LEFT
+        SUBQ.W  #1,(SHIPVELY)
+        
+LEFT:   BTST.L  #0,D0   ; TEST LEFT KEY
+        BEQ END
+        SUBQ.W  #1,(SHIPVELX)
+END:
+
+        ; UPDATE THE POSITION BASED ON THE VELOCITY
+        MOVE.W  (SHIPVELX),D0
+        ADD.W   D0,(SHIPPOSX)
+        MOVE.W  (SHIPVELY),D0
+        ADD.W   D0,(SHIPPOSY)
+        
+        RTS
 
 ; ------------------------------------------------------------------------------
 SHIPPLOT
@@ -69,6 +96,7 @@ SHIPPLOT
     RTS
     
     
+
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~

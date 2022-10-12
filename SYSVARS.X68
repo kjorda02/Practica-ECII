@@ -3,6 +3,7 @@
 * ==============================================================================
 
 ; --- KEYBOARD RELATED VARIABLES -----------------------------------------------
+; [PAUSE|FIRE3|FIRE2|FIRE1|DOWN|RIGHT|UP|LEFT]
 
 KBDVAL      DS.B    1   ; KEY STATE
 KBDEDGE     DS.B    1   ; KEY EDGE

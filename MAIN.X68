@@ -45,7 +45,7 @@ START:
     JSR SHIPPLOT
     JSR PROJPLOT
     
-    TRAP    #0  ; UPDATE SCREEN
+    TRAP    #0      ; UPDATE SCREEN
 
     BRA     .LOOP
     
