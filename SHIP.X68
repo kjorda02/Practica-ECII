@@ -40,6 +40,18 @@ SHIPUPD
         CLR.L   D0  ; IMPORTANTE
         CLR.L   D1
         
+        ; SLOW DOWN THE SHIP
+        MOVE.W  (SHIPVELX),D0
+        MOVE.W  (SHIPVELY),D1
+        ASR.W   #SHIPDECC,D0
+        ASR.W   #SHIPDECC,D1
+        
+        SUB.W   D0,(SHIPVELX)
+        SUB.W   D1,(SHIPVELY)
+        
+        CLR.L   D0  ; IMPORTANTE
+        CLR.L   D1
+        
         ; CALCULATE THE POSITION OF THE EDGE POINTS BASED ON THE CENTER POSITION
         ; AND ANGLE (USING THE ROTATION MATRIX AND SINE TABLE)
         MOVE.B  (SHIPANGL),D0
@@ -152,11 +164,11 @@ UP:     BTST.L  #1,D0   ; TEST UP KEY
         MOVE.W  RCTCOSTB(A0),D2 ;COS
         
         ;MULS    #1,D1
-        ASR.W   #SHIPACC,D1
+        ;ASR.W   #SHIPACC,D1
         SUB.W   D1,(SHIPVELX)   ; X=-ACC*COS(ANGLE)
         
         ;MULS    #1,D2
-        ASR.W   #SHIPACC,D2
+        ;ASR.W   #SHIPACC,D2
         SUB.W   D2,(SHIPVELY)
         
         
@@ -211,6 +223,7 @@ RTS
 
     
     
+
 
 *~Font name~Fixedsys~
 *~Font size~18~
