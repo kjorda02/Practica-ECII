@@ -4,61 +4,58 @@
 * Date       :
 * Description:
 * ==============================================================================
-    ORG    $1000
+            ORG    $1000
     
-    INCLUDE "CONST.X68"
-    INCLUDE "SYSCONST.X68"
-    INCLUDE "SYSTEM.X68"
-    INCLUDE "SHIP.X68"
-    INCLUDE "PROJECTILE.X68"
-    INCLUDE "SCORE.X68"
-    INCLUDE "RCTDATA.X68"
-    DS.W    1   ; WORD ALIGNMENT
+            INCLUDE "CONST.X68"
+            INCLUDE "SYSCONST.X68"
+            INCLUDE "SYSTEM.X68"
+            INCLUDE "SHIP.X68"
+            INCLUDE "PROJECTILE.X68"
+            INCLUDE "SCORE.X68"
+            INCLUDE "RCTDATA.X68"
+            DS.W    1   ; WORD ALIGNMENT
 START:
 
 ; --- INITIALIZATION -----------------------------------------------------------
-    JSR SYSINIT
-    JSR SHIPINIT
-    JSR SCOINIT
+            JSR SYSINIT
+            JSR SHIPINIT
+            JSR SCOINIT
 
 .LOOP
 
 ; --- UPDATE -------------------------------------------------------------------
 
 ; READ INPUT DEVICES
-    TRAP #1
+            TRAP #1
 
 ; UPDATE GAME LOGIC
 
-    JSR SHIPUPD
-    JSR PROJUPD
-    JSR SCOUPD
+            JSR SHIPUPD
+            JSR PROJUPD
+            JSR SCOUPD
 
 ; --- SYNC ---------------------------------------------------------------------
-    ; THE FOLLOWING SYNC STRATEGY IS ***WRONG***
-    MOVE.B  #23,D0
-    MOVE.L  #3,D1
-    TRAP    #15
+            ; THE FOLLOWING SYNC STRATEGY IS ***WRONG***
+            MOVE.B  #23,D0
+            MOVE.L  #3,D1
+            TRAP    #15
 
 ; --- PLOT ---------------------------------------------------------------------
 
-    JSR SCOPLOT
-    JSR SHIPPLOT
-    JSR PROJPLOT
+            JSR SCOPLOT
+            JSR SHIPPLOT
+            JSR PROJPLOT
     
-    TRAP    #0      ; UPDATE SCREEN
+            TRAP    #0      ; UPDATE SCREEN
 
-    BRA     .LOOP
+            BRA     .LOOP
     
-    SIMHALT
+            SIMHALT
     
-    INCLUDE "VARS.X68"
-    INCLUDE "SYSVARS.X68"
+            INCLUDE "VARS.X68"
+            INCLUDE "SYSVARS.X68"
 
-    END    START
-
-
-
+            END    START
 
 *~Font name~Fixedsys~
 *~Font size~18~
