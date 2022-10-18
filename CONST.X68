@@ -31,6 +31,9 @@ SCOFCOL     EQU $00000000   ; TEXT BACKGROUND COLOR
 SCOLINE1    EQU $0101       ; FIRST TEXT LINE COORDINATES
 SCOLINE2    EQU $0102       ; SECOND TEXT LINE COORDINATES
 
+; --- MAP RELATED CONSTANTS ----------------------------------------------------
+MAPSIZE     EQU $1000       ; Max number of objects (sizeOf = MAPSIZE*(3words/obj))
+
 
 
 

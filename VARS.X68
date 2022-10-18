@@ -31,6 +31,11 @@ PROJPOSY    DS.W    1   ; PROJECTILE Y COORDINATE
 SHIPHLTH    DS.W    1   ; SHIP HEALTH
 PLASCORE    DS.W    1   ; PLAYER SCORE
 
+; --- MAP RELATED VARIABLES ----------------------------------------------------
+
+MAP         DS.W    MAPSIZE    ; HOLDS POSITION, VELOCITY AND POINTER TO THE
+                                ; TYPE OF OBJECT FOR ALL OBJECTS IN THE MAP
+
 
 
 *~Font name~Fixedsys~

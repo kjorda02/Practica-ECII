@@ -180,34 +180,40 @@ SHIPPLOT
 ; PLOT THE SHIP
 ; INPUT    : NONE
 ; OUTPUT   : NONE
-; MODIFIES : D0-D4
+; MODIFIES : D0-D2
 ; ------------------------------------------------------------------------------
-            MOVEM.L D0-D4,-(A7)
-    
+            MOVEM.L D0-D2,-(A7)
+            
             ; SET CONTOUR COLOR
             MOVE.W  #80,D0
-            MOVE.L  #$00000040,D1
+            MOVE.L  #SHPCOL,D1
             TRAP    #15
     
-            MOVE.B  #84,D0
+            ; MOVE CURSOR TO NOSE POINT
+            MOVE.W  #86,D0
             MOVE.W  (SHFRONTX),D1
             MOVE.W  (SHFRONTY),D2
-            MOVE.W  #SCRWIDTH/2,D3
-            MOVE.W  #SCRHEIGH/2,D4
             TRAP    #15
 
-            MOVE.W  #80,D0
-            MOVE.L  #$00400000,D1
+            ; DRAW LINE TO LEFT BASE POINT
+            MOVE.W  #85,D0
+            MOVE.W  (SHBACKLX),D1
+            MOVE.W  (SHBACKLY),D2
             TRAP    #15
-    
-            MOVE.B  #84,D0
+
+            ; DRAW LINE TO RIGHT BASE POINT
+            MOVE.W  #85,D0
+            MOVE.W  (SHBACKRX),D1
+            MOVE.W  (SHBACKRY),D2
+            TRAP    #15
+
+            ; DRAW LINE BACK TO NOSE POINT
+            MOVE.B  #85,D0
             MOVE.W  (SHFRONTX),D1
             MOVE.W  (SHFRONTY),D2
-            MOVE.W  #SCRWIDTH,D3
-            MOVE.W  #SCRHEIGH,D4
             TRAP    #15
-    
-            MOVEM.L (A7)+,D0-D4
+
+            MOVEM.L (A7)+,D0-D2
 
             RTS
 

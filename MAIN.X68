@@ -13,6 +13,7 @@
             INCLUDE "PROJECTILE.X68"
             INCLUDE "SCORE.X68"
             INCLUDE "RCTDATA.X68"
+            INCLUDE "MAP.X68"
             DS.W    1   ; WORD ALIGNMENT
 START:
 
