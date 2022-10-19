@@ -33,6 +33,9 @@ SCOLINE2    EQU $0102       ; SECOND TEXT LINE COORDINATES
 
 ; --- MAP RELATED CONSTANTS ----------------------------------------------------
 MAPSIZE     EQU $1000       ; Max number of objects (sizeOf = MAPSIZE*(3words/obj))
+OBJSIZE     EQU 10          ; Number of bytes per object stored in the MAP vector
+ELEMSIZE    EQU 6           ; Number of bytes per element (point) stored in the
+                            ; Object definition vectors
 
 
 

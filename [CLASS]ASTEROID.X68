@@ -2,7 +2,7 @@
 ;                           ASTEROID OBJECT DEFINITION
 * ==============================================================================
 
-ASTEROID    DC.W    4, $FF,-15,15, $FF,15,15, $FF,-15,-15, $FF,15,-15
+ASTEROID    DC.W    15,20,20, $FF,-15,15, $FF,15,15, $FF,-15,-15, $FF,15,-15
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~
