@@ -6,6 +6,7 @@
 
 SCRWIDTH    EQU     640*2     ; SCREEN WIDTH
 SCRHEIGH    EQU     480*2     ; SCREEN HEIGHT
+SCRINTNM    EQU     1
 
 ; --- KEYCODES -----------------------------------------------------------------
 
@@ -17,6 +18,7 @@ KBDFIRE1    EQU ' '
 KBDFIRE2    EQU 'M'
 KBDFIRE3    EQU $10 ; SHIFT
 KBDPAUSE    EQU 'P'
+
 
 *~Font name~Fixedsys~
 *~Font size~18~

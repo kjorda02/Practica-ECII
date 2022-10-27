@@ -19,6 +19,9 @@
             DS.W    1   ; WORD ALIGNMENT
 START:
 
+; DISABLE INTERRUPTS
+            OR.W    #$0700,SR
+
 ; --- INITIALIZATION -----------------------------------------------------------
             JSR SYSINIT
             JSR SHIPINIT
@@ -39,9 +42,13 @@ START:
 
 ; --- SYNC ---------------------------------------------------------------------
             ; THE FOLLOWING SYNC STRATEGY IS ***WRONG***
-            MOVE.B  #23,D0
-            MOVE.L  #3,D1
-            TRAP    #15
+            ;MOVE.B  #23,D0
+            ;MOVE.L  #3,D1
+            ;TRAP    #15
+            
+.WAIT       TST.B   (SCRINTCT)
+            BEQ     .WAIT
+            CLR.B   (SCRINTCT)
 
 ; --- PLOT ---------------------------------------------------------------------
 

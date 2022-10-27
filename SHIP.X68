@@ -9,6 +9,7 @@ SHIPINIT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
+            CLR.B   SHANGL
             MOVE.W  #SCRHEIGH/2,(SHPOSY) ; Intialize ship at center of screen
             MOVE.W  #SCRWIDTH/2,(SHPOSX)
             RTS
@@ -139,11 +140,11 @@ SHIPUPD
             MOVE.W  RCTCOSTB(A0),D2 ;COS
         
             ;MULS    #1,D1
-            ;ASR.W   #SHIPACC,D1
+            ASR.W   #1,D1
             ADD.W   D1,(SHVELX)   ; X=-ACC*COS(ANGLE)
         
             ;MULS    #1,D2
-            ;ASR.W   #SHIPACC,D2
+            ASR.W   #1,D2
             ADD.W   D2,(SHVELY)
         
 RIGHT:      BTST.L  #2,D0   ; TEST RIGHT KEY
@@ -159,11 +160,11 @@ UP:         BTST.L  #1,D0   ; TEST UP KEY
             MOVE.W  RCTCOSTB(A0),D2 ;COS
         
             ;MULS    #1,D1
-            ;ASR.W   #SHIPACC,D1
+            ASR.W   #1,D1
             SUB.W   D1,(SHVELX)   ; X=-ACC*COS(ANGLE)
         
             ;MULS    #1,D2
-            ;ASR.W   #SHIPACC,D2
+            ASR.W   #1,D2
             SUB.W   D2,(SHVELY)
         
         

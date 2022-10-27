@@ -8,6 +8,10 @@
 KBDVAL      DS.B    1   ; KEY STATE
 KBDEDGE     DS.B    1   ; KEY EDGE
 
+; --- SCREEN INTERRUPT RELATED VARIABLES ---------------------------------------
+
+SCRINTCT    DS.B    1
+SCRCYCCT    DS.B    1
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~

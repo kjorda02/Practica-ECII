@@ -16,7 +16,7 @@ SYSINIT
     
             ; Switch to user mode and return from subroutine
             MOVE.W  SR,-(A7)
-            ANDI.W  #$DFFF,(A7)
+            ANDI.W  #$D8FF,(A7)
             RTE
     
 ; ------------------------------------------------------------------------------
@@ -43,6 +43,20 @@ SCRINIT
             MOVE.B  #11,D0
             MOVE.W  #$FF00,D1
             TRAP    #15
+            
+            ; INIT SCREEN VARIABLES
+            CLR.B   (SCRINTCT)
+            CLR.B   (SCRCYCCT)
+            
+            ; INSTALL ISR SCRISR INTO INT. NUM. SCRINTNM
+            MOVE.L  #SCRISR,($60+SCRINTNM*4)    ; INSTALL SCRISR
+            
+            ; ENABLE HARDWARE (TIMED INTERRUPT)
+            MOVE.B  #32,D0
+            MOVE.B  #6,D1
+            MOVE.B  #%10000000|SCRINTNM,D2
+            MOVE.B  #20,D3                  ; MILLISECONDS PER FRAME
+            TRAP    #15
     
             ; ENABLE DOUBLE BUFFER
             MOVE.B  #92,D0
@@ -53,6 +67,18 @@ SCRINIT
     
             RTS
     
+; ------------------------------------------------------------------------------
+SCRISR
+; TIMED INTERRUPT SERVICE ROUTINE
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            ADDQ.B  #1,(SCRINTCT)
+            ADDQ.B  #1,(SCRCYCCT)
+            
+
+            RTE
 
 ; ------------------------------------------------------------------------------
 SCRPLOT
