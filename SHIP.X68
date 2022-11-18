@@ -24,26 +24,19 @@ SHIPUPD
             MOVEM.L D0-D3/A0,-(A7)
 
             ; UPDATE THE POSITION BASED ON THE VELOCITY
-            MOVE.W  (SHVELX),D0
-            EXT.L   D0
-            ASL.L   #8,D0           ; WE HAVE TO MATCH THE POINT POSITION
+            MOVE.L  (SHVELX),D0
             ADD.L   D0,(SHPOSX)
-            MOVE.W  (SHVELY),D0
-            EXT.L   D0
-            ASL.L   #8,D0
+            MOVE.L  (SHVELY),D0
             ADD.L   D0,(SHPOSY)
         
-            CLR.L   D0  ; IMPORTANTE
-            CLR.L   D1
-        
             ; SLOW DOWN THE SHIP
-            MOVE.W  (SHVELX),D0
-            MOVE.W  (SHVELY),D1
-            ASR.W   #SHDECC,D0
-            ASR.W   #SHDECC,D1
+            MOVE.L  (SHVELX),D0
+            MOVE.L  (SHVELY),D1
+            ASR.L   #SHDECC,D0
+            ASR.L   #SHDECC,D1
         
-            SUB.W   D0,(SHVELX)
-            SUB.W   D1,(SHVELY)
+            SUB.L   D0,(SHVELX)
+            SUB.L   D1,(SHVELY)
         
             CLR.L   D0  ; IMPORTANTE
             CLR.L   D1
@@ -140,12 +133,14 @@ SHIPUPD
             MOVE.W  RCTCOSTB(A0),D2 ;COS
         
             ;MULS    #1,D1
-            ASR.W   #1,D1
-            ADD.W   D1,(SHVELX)   ; X=-ACC*COS(ANGLE)
+            EXT.L   D1
+            ASL.L   #7,D1
+            ADD.L   D1,(SHVELX)   ; X=-ACC*COS(ANGLE)
         
             ;MULS    #1,D2
-            ASR.W   #1,D2
-            ADD.W   D2,(SHVELY)
+            EXT.L   D2
+            ASL.L   #7,D2
+            ADD.L   D2,(SHVELY)
         
 RIGHT:      BTST.L  #2,D0   ; TEST RIGHT KEY
             BEQ UP
@@ -160,12 +155,14 @@ UP:         BTST.L  #1,D0   ; TEST UP KEY
             MOVE.W  RCTCOSTB(A0),D2 ;COS
         
             ;MULS    #1,D1
-            ASR.W   #1,D1
-            SUB.W   D1,(SHVELX)   ; X=-ACC*COS(ANGLE)
+            EXT.L   D1
+            ASL.L   #7,D1
+            SUB.L   D1,(SHVELX)   ; X=-ACC*COS(ANGLE)
         
             ;MULS    #1,D2
-            ASR.W   #1,D2
-            SUB.W   D2,(SHVELY)
+            EXT.L   D2
+            ASL.L   #7,D2
+            SUB.L   D2,(SHVELY)
         
         
 LEFT:       BTST.L  #0,D0   ; TEST LEFT KEY
@@ -220,6 +217,7 @@ SHIPPLOT
 
     
     
+
 
 
 *~Font name~Fixedsys~
