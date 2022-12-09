@@ -41,8 +41,10 @@ MAP         DS.W    MAPSIZE    ; HOLDS POSITION, VELOCITY AND POINTER TO THE
                                 
 ; --- MAP RELATED VARIABLES ----------------------------------------------------
 
-LINES       DS.L    LINESIZE
-NOFLINES    DS.W    1
+;LINES       DC.L    $FFFFFF00,$0000000F,$FFFFFF80,$0020FFE0
+LINES       DC.L    $FFFFFF00,$026201AE,$FFFFFF80,$029E0244,$AA00FF80,$03660118,$FFAA0080,$042E0118
+
+NOFLINES    DC.W    4
 
 
 

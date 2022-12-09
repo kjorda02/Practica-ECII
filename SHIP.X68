@@ -181,11 +181,11 @@ SHIPPLOT
 ; ------------------------------------------------------------------------------
             MOVEM.L D0-D2,-(A7)
             
-            MOVE.W  #0,(CAMPOSY)
-            MOVE.W  #0,(CAMPOSX)
+            ;MOVE.W  #0,(CAMPOSY)
+            ;MOVE.W  #0,(CAMPOSX)
             
-            ;MOVE.W  (SHPOSX),(CAMPOSX)
-            ;MOVE.W  (SHPOSY),(CAMPOSY)
+            MOVE.W  (SHPOSX),(CAMPOSX)
+            MOVE.W  (SHPOSY),(CAMPOSY)
             
             ADD.W  #SCRHEIGH/2,(CAMPOSY) ; Offset the camera's position so that
             SUB.W  #SCRWIDTH/2,(CAMPOSX) ; It no longer represents the upper left

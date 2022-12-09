@@ -10,7 +10,6 @@
             INCLUDE "SYSCONST.X68"
             INCLUDE "SYSTEM.X68"
             INCLUDE "SHIP.X68"
-            INCLUDE "PROJECTILE.X68"
             INCLUDE "SCORE.X68"
             INCLUDE "RCTDATA.X68"
             INCLUDE "LINES.X68"
@@ -40,7 +39,6 @@ START:
 ; UPDATE GAME LOGIC
 
             JSR SHIPUPD
-            JSR PROJUPD
             JSR SCOUPD
 
 ; --- SYNC ---------------------------------------------------------------------
@@ -48,6 +46,7 @@ START:
             TST.B   (SCRINTCT)
             BEQ     .WAIT
             ADDQ.W  #1,(DROPFRA)
+            CLR.B   (SCRINTCT)
             BRA     .LOOP
             
 .WAIT       TST.B   (SCRINTCT)
@@ -58,7 +57,7 @@ START:
 
             JSR SCOPLOT
             JSR SHIPPLOT
-            JSR PROJPLOT
+            JSR LINEPLOT
     
             TRAP    #0      ; UPDATE SCREEN
 
