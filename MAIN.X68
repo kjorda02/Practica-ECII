@@ -13,8 +13,7 @@
             INCLUDE "PROJECTILE.X68"
             INCLUDE "SCORE.X68"
             INCLUDE "RCTDATA.X68"
-            INCLUDE "[CLASS]ASTEROID.X68"  
-            INCLUDE "MAP.X68"
+            INCLUDE "LINES.X68"
             
             DS.W    1   ; WORD ALIGNMENT
 START:
@@ -23,6 +22,10 @@ START:
             OR.W    #$0700,SR
 
 ; --- INITIALIZATION -----------------------------------------------------------
+            MOVE.W  #32,D0  ; ENABLE EXCEPTIONS
+            MOVE.W  #5,D1
+            TRAP    #15
+            
             JSR SYSINIT
             JSR SHIPINIT
             JSR SCOINIT
@@ -41,10 +44,11 @@ START:
             JSR SCOUPD
 
 ; --- SYNC ---------------------------------------------------------------------
-            ; THE FOLLOWING SYNC STRATEGY IS ***WRONG***
-            ;MOVE.B  #23,D0
-            ;MOVE.L  #3,D1
-            ;TRAP    #15
+            ; IF SCRINTCT IS 1 IT MEANS WE'RE LATE
+            TST.B   (SCRINTCT)
+            BEQ     .WAIT
+            ADDQ.W  #1,(DROPFRA)
+            BRA     .LOOP
             
 .WAIT       TST.B   (SCRINTCT)
             BEQ     .WAIT

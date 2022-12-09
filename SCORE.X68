@@ -49,15 +49,25 @@ SCOPLOT
             MOVE.B  #17,D0
             TRAP    #15
     
-            ; SET CURSOR POSITION FOR LINE 1
+            ; SET CURSOR POSITION FOR LINE 2
             MOVE.B  #11,D0
             MOVE.W  #SCOLINE2,D1
             TRAP    #15
     
             ; PRINT SECOND LINE
             LEA     .TXT2,A1
-            CLR.L   D1
             MOVE.W  (SHIPHLTH),D1
+            MOVE.B  #17,D0
+            TRAP    #15
+            
+            ; SET CURSOR POSITION FOR LINE 3
+            MOVE.B  #11,D0
+            MOVE.W  #SCOLINE3,D1
+            TRAP    #15
+            
+            ; PRINT THIRD LINE
+            LEA     .TXT3,A1
+            MOVE.W  (DROPFRA),D1
             MOVE.B  #17,D0
             TRAP    #15
     
@@ -67,6 +77,7 @@ SCOPLOT
 
 .TXT1       DC.B    'SCORE: ',0
 .TXT2       DC.B    'HEALTH: ',0
+.TXT3       DC.B    'DROPPED_FRAMES: ',0
 
 
 *~Font name~Fixedsys~

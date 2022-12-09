@@ -30,14 +30,16 @@ PROJCOL     EQU $00FFFFFF
 SCOFCOL     EQU $00000000   ; TEXT BACKGROUND COLOR
 SCOLINE1    EQU $0101       ; FIRST TEXT LINE COORDINATES
 SCOLINE2    EQU $0102       ; SECOND TEXT LINE COORDINATES
+SCOLINE3    EQU $0103       ; THIRD TEXT LINE COORDINATES
 
 ; --- MAP RELATED CONSTANTS ----------------------------------------------------
 MAPSIZE     EQU $1000       ; Max number of objects (sizeOf = MAPSIZE*(3words/obj))
 OBJSIZE     EQU 10          ; Number of bytes per object stored in the MAP vector
 ELEMSIZE    EQU 6           ; Number of bytes per element (point) stored in the
                             ; Object definition vectors
-
-
+                            
+; --- LINE RELATED CONSTANTS ---------------------------------------------------
+LINESIZE    EQU $1000
 
 
 

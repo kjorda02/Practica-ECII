@@ -47,6 +47,7 @@ SCRINIT
             ; INIT SCREEN VARIABLES
             CLR.B   (SCRINTCT)
             CLR.B   (SCRCYCCT)
+            CLR.W   (DROPFRA)
             
             ; INSTALL ISR SCRISR INTO INT. NUM. SCRINTNM
             MOVE.L  #SCRISR,($60+SCRINTNM*4)    ; INSTALL SCRISR
@@ -55,7 +56,7 @@ SCRINIT
             MOVE.B  #32,D0
             MOVE.B  #6,D1
             MOVE.B  #%10000000|SCRINTNM,D2
-            MOVE.B  #20,D3                  ; MILLISECONDS PER FRAME
+            MOVE.B  #1000/SCRFPS,D3             ; MILLISECONDS PER FRAME
             TRAP    #15
     
             ; ENABLE DOUBLE BUFFER
@@ -160,6 +161,7 @@ KBDUPD
     
     
     
+
 
 *~Font name~Fixedsys~
 *~Font size~18~
