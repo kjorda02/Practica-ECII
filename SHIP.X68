@@ -10,8 +10,10 @@ SHIPINIT
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             CLR.B   SHANGL
-            MOVE.W  #SCRHEIGH/2,(SHPOSY) ; Intialize ship at center of screen
-            MOVE.W  #SCRWIDTH/2,(SHPOSX)
+            MOVE.W  #0,(SHPOSY) ; Intialize ship at 0,0
+            MOVE.W  #0,(SHPOSX)
+            MOVE.W  #0,(CAMPOSY) ; Initialize camera at 0,0
+            MOVE.W  #0,(CAMPOSX)
             RTS
             
 ; ------------------------------------------------------------------------------
@@ -61,7 +63,6 @@ SHIPUPD
         
             MOVE.W  D1,D3               ; COS
             MULS    #SHFRONTYC,D3        ; Y*COS(SHIPANGL)*2^8
-            NEG.L   D3                  ; DOWN IS GROWING Y (PERHAPS .L NOT NECESSARY)
             ASL.L   #8,D3               ; -Y*COS(SHIPANGL)
             ADD.L   (SHPOSY),D3
             ASR.L   #8,D3
@@ -86,7 +87,6 @@ SHIPUPD
             MULS    #SHBACKLXC,D2        ; SIN*X
             MULS    #SHBACKLYC,D3        ; COS*Y
             ADD.L   D2,D3
-            NEG.L   D3 
             ASL.L   #8,D3
             ADD.L   (SHPOSY),D3
             ASR.L   #8,D3
@@ -111,7 +111,6 @@ SHIPUPD
             MULS    #SHBACKRXC,D2        ; SIN*X
             MULS    #SHBACKRYC,D3        ; COS*Y
             ADD.L   D2,D3
-            NEG.L   D3 
             ASL.L   #8,D3
             ADD.L   (SHPOSY),D3
             ASR.L   #8,D3
@@ -175,12 +174,22 @@ END:
 
 ; ------------------------------------------------------------------------------
 SHIPPLOT
-; PLOT THE SHIP
+; PLOT THE SHIP TAKING INTO ACCOUNT THE CAMERA'S POSITION
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : D0-D2
 ; ------------------------------------------------------------------------------
             MOVEM.L D0-D2,-(A7)
+            
+            MOVE.W  #0,(CAMPOSY)
+            MOVE.W  #0,(CAMPOSX)
+            
+            ;MOVE.W  (SHPOSX),(CAMPOSX)
+            ;MOVE.W  (SHPOSY),(CAMPOSY)
+            
+            ADD.W  #SCRHEIGH/2,(CAMPOSY) ; Offset the camera's position so that
+            SUB.W  #SCRWIDTH/2,(CAMPOSX) ; It no longer represents the upper left
+            ; Corner of the frame, but it's center
             
             ; SET CONTOUR COLOR
             MOVE.W  #80,D0
@@ -190,25 +199,33 @@ SHIPPLOT
             ; MOVE CURSOR TO NOSE POINT
             MOVE.W  #86,D0
             MOVE.W  (SHFRONTX),D1
-            MOVE.W  (SHFRONTY),D2
+            SUB.W   CAMPOSX,D1  ; D1 = X-X0
+            MOVE.W  CAMPOSY,D2
+            SUB.W   (SHFRONTY),D2 ; D2 = Y0-Y
             TRAP    #15
 
             ; DRAW LINE TO LEFT BASE POINT
             MOVE.W  #85,D0
             MOVE.W  (SHBACKLX),D1
-            MOVE.W  (SHBACKLY),D2
+            SUB.W   (CAMPOSX),D1
+            MOVE.W  (CAMPOSY),D2
+            SUB.W   (SHBACKLY),D2
             TRAP    #15
 
             ; DRAW LINE TO RIGHT BASE POINT
             MOVE.W  #85,D0
             MOVE.W  (SHBACKRX),D1
-            MOVE.W  (SHBACKRY),D2
+            SUB.W   (CAMPOSX),D1
+            MOVE.W  (CAMPOSY),D2
+            SUB.W   (SHBACKRY),D2
             TRAP    #15
 
             ; DRAW LINE BACK TO NOSE POINT
             MOVE.B  #85,D0
             MOVE.W  (SHFRONTX),D1
-            MOVE.W  (SHFRONTY),D2
+            SUB.W   (CAMPOSX),D1
+            MOVE.W  (CAMPOSY),D2
+            SUB.W   (SHFRONTY),D2
             TRAP    #15
 
             MOVEM.L (A7)+,D0-D2
