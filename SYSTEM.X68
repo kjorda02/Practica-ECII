@@ -67,7 +67,7 @@ SCRINIT
             MOVE.B  #32,D0
             MOVE.B  #6,D1
             MOVE.B  #%10000000|FPSINTNM,D2
-            MOVE.L  #1000,D3    ; GENERATE INTERRUPT EVERY SECOND
+            MOVE.L  #4000,D3    ; GENERATE INTERRUPT EVERY 4 SECONDS
             TRAP    #15
     
             ; ENABLE DOUBLE BUFFER
@@ -88,6 +88,8 @@ FPSISR
 ; ------------------------------------------------------------------------------
             MOVE.W  (FRAMES),(FPS)
             CLR.W   (FRAMES)
+            ASR.W   FPS
+            ASR.W   FPS    ; DIVIDE BY 4
 
             RTE
     
