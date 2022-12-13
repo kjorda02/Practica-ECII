@@ -45,13 +45,13 @@ START:
             ; IF SCRINTCT IS 1 IT MEANS WE'RE LATE
             TST.B   (SCRINTCT)
             BEQ     .WAIT
-            ADDQ.W  #1,(DROPFRA)
             CLR.B   (SCRINTCT)
             BRA     .LOOP
             
-.WAIT       TST.B   (SCRINTCT)
+.WAIT       TST.B   (SCRINTCT)  ; WAIT UNTIL SCRINTCT IS 1
             BEQ     .WAIT
             CLR.B   (SCRINTCT)
+            ADDQ.W  #1,(FRAMES)    ; EVERY FRAME WE DRAW WE ADD 1 TO FRAMES
 
 ; --- PLOT ---------------------------------------------------------------------
 

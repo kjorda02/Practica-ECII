@@ -33,7 +33,8 @@ CAMPOSY     DS.W    1
 
 SHIPHLTH    DS.W    1   ; SHIP HEALTH
 PLASCORE    DS.W    1   ; PLAYER SCORE
-DROPFRA     DS.W    1   ; DROPPED FRAMES
+FRAMES      DS.W    1   ; FRAME COUNTER
+FPS         DS.W    1   ; LAST VALUE OF FRAMES
 
 ; --- MAP RELATED VARIABLES ----------------------------------------------------
 MAP         DS.W    MAPSIZE    ; HOLDS POSITION, VELOCITY AND POINTER TO THE

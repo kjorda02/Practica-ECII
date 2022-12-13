@@ -7,6 +7,7 @@
 SCRWIDTH    EQU     640*2     ; SCREEN WIDTH
 SCRHEIGH    EQU     480*2     ; SCREEN HEIGHT
 SCRINTNM    EQU     1
+FPSINTNM    EQU     2
 SCRFPS      EQU     60
 
 ; --- KEYCODES -----------------------------------------------------------------

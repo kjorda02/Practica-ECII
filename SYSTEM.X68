@@ -47,7 +47,8 @@ SCRINIT
             ; INIT SCREEN VARIABLES
             CLR.B   (SCRINTCT)
             CLR.B   (SCRCYCCT)
-            CLR.W   (DROPFRA)
+            CLR.W   (FRAMES)
+            CLR.W   (FPS)
             
             ; INSTALL ISR SCRISR INTO INT. NUM. SCRINTNM
             MOVE.L  #SCRISR,($60+SCRINTNM*4)    ; INSTALL SCRISR
@@ -56,7 +57,17 @@ SCRINIT
             MOVE.B  #32,D0
             MOVE.B  #6,D1
             MOVE.B  #%10000000|SCRINTNM,D2
-            MOVE.B  #1000/SCRFPS,D3             ; MILLISECONDS PER FRAME
+            MOVE.L  #1000/SCRFPS,D3             ; MILLISECONDS PER FRAME
+            TRAP    #15
+            
+            ; INSTALL ISR FPSISR INTO INT. NUM. FPSINTNM
+            MOVE.L  #FPSISR,($60+FPSINTNM*4)    ; INSTALL SCRISR
+            
+            ; ENABLE TIMED INTERRUPT FOR FPSISR
+            MOVE.B  #32,D0
+            MOVE.B  #6,D1
+            MOVE.B  #%10000000|FPSINTNM,D2
+            MOVE.L  #1000,D3    ; GENERATE INTERRUPT EVERY SECOND
             TRAP    #15
     
             ; ENABLE DOUBLE BUFFER
@@ -67,6 +78,18 @@ SCRINIT
             MOVEM.L (A7)+,D0-D1
     
             RTS
+
+; ------------------------------------------------------------------------------
+FPSISR
+; TIMED INTERRUPT SERVICE ROUTINE
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            MOVE.W  (FRAMES),(FPS)
+            CLR.W   (FRAMES)
+
+            RTE
     
 ; ------------------------------------------------------------------------------
 SCRISR
@@ -77,7 +100,6 @@ SCRISR
 ; ------------------------------------------------------------------------------
             ADDQ.B  #1,(SCRINTCT)
             ADDQ.B  #1,(SCRCYCCT)
-            
 
             RTE
 

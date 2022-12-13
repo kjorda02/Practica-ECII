@@ -21,7 +21,7 @@ LINUPD
 
 ; ------------------------------------------------------------------------------
 LINEPLOT
-; PLOT ALL LINES THE CAMERA'S POSITION
+; PLOT ALL LINES TAKING INTO ACCOUNT THE CAMERA'S POSITION
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE

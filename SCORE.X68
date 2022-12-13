@@ -67,7 +67,7 @@ SCOPLOT
             
             ; PRINT THIRD LINE
             LEA     .TXT3,A1
-            MOVE.W  (DROPFRA),D1
+            MOVE.W  (FPS),D1
             MOVE.B  #17,D0
             TRAP    #15
     
@@ -77,7 +77,7 @@ SCOPLOT
 
 .TXT1       DC.B    'SCORE: ',0
 .TXT2       DC.B    'HEALTH: ',0
-.TXT3       DC.B    'DROPPED_FRAMES: ',0
+.TXT3       DC.B    'FPS: ',0
 
 
 *~Font name~Fixedsys~
