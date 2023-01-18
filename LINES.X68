@@ -17,6 +17,15 @@ COLTST
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
+; [BBBBBBBB GGGGGGGG RRRRRRRR <DRAW><COLLISION><POSX><POSXUPD><POSY><POSYUPD><START><END> XXXXXXXX XXXXXXXX YYYYYYYY YYYYYYYY]
+;
+; DRAW:         SHOULD LINE BE DRAWN FROM PREVIOUS VERTEX TO CURRENT VERTEX?
+; COLLISION:    SHOULD WE TEST FOR COLLISIONS AGAINST THIS LINE?
+; POSX:         1=SHIP TO THE RIGHT OF LINE, 0 OTHERWISE
+; POSY:         1=SHIP ON TOP OF LINE, 0 OTHERWISE
+; POS<X/Y>UPD:  1=POS<X/Y> WAS UPDATED LAST FRAME, 0 OTHERWISE
+; START:        COLLISION WITH THIS LINE WILL START STOPWATCH
+; STOP:         COLLISION WITH THIS LINE WILL STOP STOPWATCH
 ; ------------------------------------------------------------------------------
             MOVEM.L D0-D7/A0,-(A7)
             
@@ -34,15 +43,19 @@ COL:
                 BTST.L  #22,D2
                 BEQ     .NOHLTEST
             
-                ; TEST HORIZONTAL INTERVAL
+                ; TEST HORIZONTAL INTERVAL ------
                 CMP.W   SHPOSX,D0
-                BLT     .LTX0       ; X>=X0
-                CMP.W   SHPOSX,D2
-                BGE     .NOVLTEST   ; X>=X0 AND X<X1
-                BRA     .VLTEST
-    .LTX0:      
-                CMP.W   SHPOSX,D2   ; X<X0
-                BLT     .NOVLTEST   ; X<X0 AND X>=X1
+                BLT     .LTX0
+                    ; X>=X0
+                    CMP.W   SHPOSX,D2
+                    BGE     .NOVLTEST
+                        ; X>=X0 AND X<X1
+                        BRA     .VLTEST
+
+        .LTX0:      ; X<X0
+                    CMP.W   SHPOSX,D2
+                    BLT     .NOVLTEST
+                        ; X<X0 AND X>=X1
     
     .VLTEST:    ; VERTICAL LINE TEST:
                 MOVE.W  D3,D4
@@ -58,17 +71,48 @@ COL:
                 DIVS    D5,D4   ; D4=(X-X0)*(Y1-Y0)/(X1-X0)
                 ADD.W   D1,D4   ; D4=(X-X0)*(Y1-Y0)/(X1-X0) + Y0
                 
+                ; DETECT COLLISIONS FOR VERTICAL LINE TEST
+                CMP.W   (SHPOSY),D4
+                BLT     .SHONTOP
+                    ; SHPOSY <= Y (SHIP IS BELOW LINE)
+                    BCLR.L  #19,D2  ; SET POSY TO 0 AND TEST PREV VALUE
+                    BEQ     .NOVCOL ; IF PREV VALUE ALSO = 0 -> NO COLLISION
+                    
+                    BTST.L  #18,D2  ; TEST POSYUPD
+                    BEQ     .NOVCOL ; IF POSYUPD=0 -> NO COLLISION
+
+                    JSR HANDLECOL   ; ELSE -> COLLISION!
+                    BRA .NOVCOL
+        .SHONTOP:
+                    ; SHPOSY > Y (SHIP IS ABOVE LINE)
+                    BSET.L  #19,D2  ; SET POSY TO 1 AND TEST PREV VALUE
+                    BNE     .NOVCOL ; IF PREV VALUE ALSO = 1 -> NO COLLISION
+                    
+                    BTST.L  #18,D2  ; TEST POSYUPD
+                    BEQ     .NOVCOL ; IF POSYUPD=0 -> NO COLLISION
+                    
+                    JSR HANDLECOL   ; ELSE -> COLLISION!
+    .NOVCOL:
+                BSET.L  #18,D2  ; POSYUPD=1
                 JSR TESTVLT
+                BRA .VINTERVAL
+    
     .NOVLTEST:
-                ; TEST VERTICAL INTERVAL
+                BCLR.L  #18,D2  ; POSYUPD=0
+    .VINTERVAL:
+                ; TEST VERTICAL INTERVAL ------
                 CMP.W   SHPOSY,D1
-                BLT     .LTY0       ; Y>=Y0
-                CMP.W   SHPOSY,D3
-                BGE     .NOHLTEST   ; Y>=Y0 AND Y<Y1
-                BRA     .HLTEST
-    .LTY0:      
-                CMP.W   SHPOSY,D3   ; Y<Y0
-                BLT     .NOHLTEST   ; Y<Y0 AND Y>=Y1
+                BLT     .LTY0
+                    ; Y>=Y0
+                    CMP.W   SHPOSY,D3
+                    BGE     .NOHLTEST
+                        ; Y>=Y0 AND Y<Y1
+                        BRA     .HLTEST
+        .LTY0:      
+                    ; Y<Y0
+                    CMP.W   SHPOSY,D3
+                    BLT     .NOHLTEST
+                        ; Y<Y0 AND Y>=Y1
 
     .HLTEST:    ; HORIZONTAL LINE TEST:
                 ; D0-X0, D1-Y0, D2-X1, D3-Y1
@@ -85,9 +129,39 @@ COL:
                 DIVS    D5,D4   ; D4=(X1-X0)*(Y-Y0)/(Y1-Y0)
                 ADD.W   D0,D4   ; D4=(X1-X0)*(Y-Y0)/(Y1-Y0) + X0
                 
+                ; DETECT COLLISIONS FOR HORIZONTAL LINE TEST
+                CMP.W   (SHPOSX),D4
+                BLT     .SHRIGHT
+                    ; SHPOSX <= X (SHIP IS TO THE LEFT OF LINE)
+                    BCLR.L  #21,D2  ; SET POSX TO 0 AND TEST PREV VALUE
+                    BEQ     .NOHCOL ; IF PREV VALUE ALSO = 0 -> NO COLLISION
+                    
+                    BTST.L  #20,D2  ; TEST POSXUPD
+                    BEQ     .NOHCOL ; IF POSXUPD=0 -> NO COLLISION
+                    
+                    JSR HANDLECOL   ; ELSE -> COLLISION!
+                    BRA .NOHCOL
+        .SHRIGHT:   
+                    ; SHPOSX > X (SHIP IS TO THE RIGHT OF LINE)
+                    BSET.L  #21,D2  ; SET POSX TO 1 AND TEST PREV VALUE
+                    BNE     .NOHCOL ; IF PREV VALUE ALSO = 1 -> NO COLLISION
+                    
+                    BTST.L  #20,D2  ; TEST POSXUPD
+                    BEQ     .NOHCOL ; IF POSXUPD=0 -> NO COLLISION
+                    
+                    JSR HANDLECOL   ; ELSE -> COLLISION
+                    
+        .NOHCOL:
+                BSET.L  #20,D2
                 JSR TESTHLT
+                BRA .ENDD
+                
     .NOHLTEST:
-
+                BCLR.L  #20,D2  ; POSXUPD=0
+    .ENDD:
+                SUBQ.W  #4,A0
+                MOVE.L  D2,LINES(A0)
+                ADDQ.W  #4,A0
                 MOVE.L  D2,D0   ; X0 = X1
                 MOVE.W  D3,D1   ; Y0 = Y1
                 
@@ -95,6 +169,10 @@ COL:
                 DBRA D6,COL
             
             MOVEM.L (A7)+,D0-D7/A0
+            RTS
+            
+HANDLECOL
+            ORI.L   #$FF000000,D2   
             RTS
             
 TESTVLT     ; D4=Y
