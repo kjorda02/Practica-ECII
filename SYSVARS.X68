@@ -10,8 +10,11 @@ KBDEDGE     DS.B    1   ; KEY EDGE
 
 ; --- SCREEN INTERRUPT RELATED VARIABLES ---------------------------------------
 
-SCRINTCT    DS.B    1
-SCRCYCCT    DS.B    1
+SCRINTCT    DS.W    1   ; SCREEN INTERRUPT COUNTER
+SCRCYCCT    DS.W    1   ; SCREEN CYCLE COUNTER
+
+UPDINTCT    DS.W    1   ; UPDATE INTERRUPT COUNTER
+UPDCYCCT    DS.W    1   ; UPDATE CYCLE COUNTER
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~

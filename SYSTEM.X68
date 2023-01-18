@@ -45,11 +45,11 @@ SCRINIT
             TRAP    #15
             
             ; INIT SCREEN VARIABLES
-            CLR.B   (SCRINTCT)
-            CLR.B   (SCRCYCCT)
-            CLR.W   (FRAMES)
+            CLR.W   (SCRINTCT)
+            CLR.W   (SCRCYCCT)
             CLR.W   (FPS)
-            CLR.W   (DROPFRA)
+            CLR.W   (UPDINTCT)
+            CLR.W   (UPDCYCCT)
             
             ; INSTALL ISR SCRISR INTO INT. NUM. SCRINTNM
             MOVE.L  #SCRISR,($60+SCRINTNM*4)    ; INSTALL SCRISR
@@ -61,6 +61,16 @@ SCRINIT
             MOVE.L  #1000/SCRFPS,D3             ; MILLISECONDS PER FRAME
             TRAP    #15
             
+            ; INSTALL ISR UPDISR INTO INT. NUM. UPDINTNM
+            MOVE.L  #UPDISR,($60+UPDINTNM*4)    ; INSTALL UPDISR
+            
+            ; ENABLE HARDWARE (TIMED INTERRUPT)
+            MOVE.B  #32,D0
+            MOVE.B  #6,D1
+            MOVE.B  #%10000000|UPDINTNM,D2
+            MOVE.L  #1000/UPDTPS,D3             ; MILLISECONDS PER UPDATE
+            TRAP    #15
+            
             ; INSTALL ISR FPSISR INTO INT. NUM. FPSINTNM
             MOVE.L  #FPSISR,($60+FPSINTNM*4)    ; INSTALL SCRISR
             
@@ -68,7 +78,7 @@ SCRINIT
             MOVE.B  #32,D0
             MOVE.B  #6,D1
             MOVE.B  #%10000000|FPSINTNM,D2
-            MOVE.L  #4000,D3    ; GENERATE INTERRUPT EVERY 4 SECONDS
+            MOVE.L  #1000,D3    ; GENERATE INTERRUPT EVERY 1 SECOND
             TRAP    #15
     
             ; ENABLE DOUBLE BUFFER
@@ -87,11 +97,22 @@ FPSISR
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            MOVE.W  (FRAMES),(FPS)
-            CLR.W   (FRAMES)
-            ASR.W   FPS
-            ASR.W   FPS    ; DIVIDE BY 4
+            MOVE.W  (SCRCYCCT),(FPS)
+            CLR.W   (SCRCYCCT)
 
+            MOVE.W  (UPDCYCCT),(TPS)
+            CLR.W   (UPDCYCCT)
+            
+            RTE
+            
+; ------------------------------------------------------------------------------
+UPDISR
+; TIMED INTERRUPT SERVICE ROUTINE
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            ADDQ.W  #1,(UPDINTCT)
             RTE
     
 ; ------------------------------------------------------------------------------
@@ -101,8 +122,7 @@ SCRISR
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            ADDQ.B  #1,(SCRINTCT)
-            ADDQ.B  #1,(SCRCYCCT)
+            ADDQ.W   #1,(SCRINTCT)
 
             RTE
 

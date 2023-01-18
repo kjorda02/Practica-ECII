@@ -29,7 +29,7 @@ START:
             JSR SHIPINIT
             JSR SCOINIT
 
-.LOOP
+.UPDATE
 
 ; --- UPDATE -------------------------------------------------------------------
 
@@ -38,29 +38,34 @@ START:
 
 ; UPDATE GAME LOGIC
 
+            ADDQ.W  #1,(UPDCYCCT)   ; 1 MORE UPDATE
             JSR SHIPUPD
             JSR SCOUPD
+            JSR COLTST
 
 ; --- SYNC ---------------------------------------------------------------------
-            ; IF SCRINTCT IS 1 IT MEANS WE'RE LATE
-            TST.B   (SCRINTCT)
-            BEQ     .WAIT
-            CLR.W   (SCRINTCT)
-            ADDQ.W  #1,(DROPFRA)
-            BRA     .LOOP
+.LOOP
+            ; IF UPDINTCT IS >0 WE'RE LATE
+            TST.W   (UPDINTCT)
+            BEQ     .UPDDONE
+            SUBQ.W  #1,(UPDINTCT)
+            BRA     .UPDATE
+
+.UPDDONE    ; ALL UPDATES ARE UP TO DATE :)
+            TST.W   (UPDINTCT)
+            BNE     .LOOP
+            TST.W   (SCRINTCT)  ; WAIT UNTIL SCRINTCT IS >0 
+            BEQ     .UPDDONE
             
-.WAIT       TST.B   (SCRINTCT)  ; WAIT UNTIL SCRINTCT IS 1
-            BEQ     .WAIT
-            CLR.B   (SCRINTCT)
-            ADDQ.W  #1,(FRAMES)    ; EVERY FRAME WE DRAW WE ADD 1 TO FRAMES
+            SUBQ.W  #1,(SCRINTCT)
+            ADDQ.W  #1,(SCRCYCCT)    ; 1 MORE FRAME DRAWN
 
 ; --- PLOT ---------------------------------------------------------------------
 
             JSR SCOPLOT
-            JSR SHIPPLOT
             JSR LINEPLOT
-            JSR COLTST
-    
+            JSR SHIPPLOT
+
             TRAP    #0      ; UPDATE SCREEN
 
             BRA     .LOOP

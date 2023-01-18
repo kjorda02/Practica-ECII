@@ -56,7 +56,7 @@ SCOPLOT
     
             ; PRINT SECOND LINE
             LEA     .TXT2,A1
-            MOVE.W  (SHIPHLTH),D1
+            MOVE.W  (TPS),D1
             MOVE.B  #17,D0
             TRAP    #15
             
@@ -76,7 +76,7 @@ SCOPLOT
             RTS
 
 .TXT1       DC.B    'SCORE: ',0
-.TXT2       DC.B    'HEALTH: ',0
+.TXT2       DC.B    'TPS: ',0
 .TXT3       DC.B    'FPS: ',0
 
 

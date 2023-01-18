@@ -133,17 +133,17 @@ SHIPUPD
         
             ;MULS    #1,D1
             EXT.L   D1
-            ASL.L   #7,D1
+            ASL.L   #SHIPACC,D1
             ADD.L   D1,(SHVELX)   ; X=-ACC*COS(ANGLE)
         
             ;MULS    #1,D2
             EXT.L   D2
-            ASL.L   #7,D2
+            ASL.L   #SHIPACC,D2
             SUB.L   D2,(SHVELY)
         
 RIGHT:      BTST.L  #2,D0   ; TEST RIGHT KEY
             BEQ UP
-            SUBQ.B  #5,(SHANGL)
+            SUBQ.B  #SHAVEL,(SHANGL)
 
 UP:         BTST.L  #1,D0   ; TEST UP KEY
             BEQ LEFT
@@ -155,18 +155,18 @@ UP:         BTST.L  #1,D0   ; TEST UP KEY
         
             ;MULS    #1,D1
             EXT.L   D1
-            ASL.L   #7,D1
+            ASL.L   #SHIPACC,D1
             SUB.L   D1,(SHVELX)   ; X=-ACC*COS(ANGLE)
         
             ;MULS    #1,D2
             EXT.L   D2
-            ASL.L   #7,D2
+            ASL.L   #SHIPACC,D2
             ADD.L   D2,(SHVELY)
         
         
 LEFT:       BTST.L  #0,D0   ; TEST LEFT KEY
             BEQ END
-            ADDQ.B  #5,(SHANGL)
+            ADDQ.B  #SHAVEL,(SHANGL)
 END:
             MOVEM.L (A7)+,D0-D3/A0
             
