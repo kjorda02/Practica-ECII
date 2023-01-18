@@ -45,7 +45,8 @@ START:
             ; IF SCRINTCT IS 1 IT MEANS WE'RE LATE
             TST.B   (SCRINTCT)
             BEQ     .WAIT
-            CLR.B   (SCRINTCT)
+            CLR.W   (SCRINTCT)
+            ADDQ.W  #1,(DROPFRA)
             BRA     .LOOP
             
 .WAIT       TST.B   (SCRINTCT)  ; WAIT UNTIL SCRINTCT IS 1
@@ -58,6 +59,7 @@ START:
             JSR SCOPLOT
             JSR SHIPPLOT
             JSR LINEPLOT
+            JSR COLTST
     
             TRAP    #0      ; UPDATE SCREEN
 

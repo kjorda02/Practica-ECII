@@ -49,6 +49,7 @@ SCRINIT
             CLR.B   (SCRCYCCT)
             CLR.W   (FRAMES)
             CLR.W   (FPS)
+            CLR.W   (DROPFRA)
             
             ; INSTALL ISR SCRISR INTO INT. NUM. SCRINTNM
             MOVE.L  #SCRISR,($60+SCRINTNM*4)    ; INSTALL SCRISR
