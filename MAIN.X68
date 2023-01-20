@@ -38,27 +38,28 @@ START:
 
 ; UPDATE GAME LOGIC
 
-            ADDQ.W  #1,(UPDCYCCT)   ; 1 MORE UPDATE
             JSR SHIPUPD
             JSR SCOUPD
             JSR COLTST
+            BRA .UPDDONE
 
 ; --- SYNC ---------------------------------------------------------------------
 .LOOP
-            ; IF UPDINTCT IS >0 WE'RE LATE
-            TST.W   (UPDINTCT)
-            BEQ     .UPDDONE
+            TST.W   (UPDINTCT)      ; WAIT FOR NEXT UPDATE INTERRUPT
+            BEQ     .LOOP
+            
             SUBQ.W  #1,(UPDINTCT)
+            ADDQ.W  #1,(UPDCYCCT)
             BRA     .UPDATE
 
 .UPDDONE    ; ALL UPDATES ARE UP TO DATE :)
-            TST.W   (UPDINTCT)
+            TST.W   (UPDINTCT)  ; MORE THAN 1 UPDATE PER FRAME CAN HAPPEN
             BNE     .LOOP
-            TST.W   (SCRINTCT)  ; WAIT UNTIL SCRINTCT IS >0 
+            TST.W   (SCRINTCT)  ; WAIT FOR NEXT FRAME INTERRUPT
             BEQ     .UPDDONE
             
             SUBQ.W  #1,(SCRINTCT)
-            ADDQ.W  #1,(SCRCYCCT)    ; 1 MORE FRAME DRAWN
+            ADDQ.W  #1,(SCRCYCCT)
 
 ; --- PLOT ---------------------------------------------------------------------
 
@@ -67,8 +68,9 @@ START:
             JSR SHIPPLOT
 
             TRAP    #0      ; UPDATE SCREEN
-
-            BRA     .LOOP
+            
+            BRA     .LOOP   ; WE DO NOT ALLOW PLOTTING MORE THAN 1 FRAME PER UPDATE
+                            ; SINCE IT WOULD BE POINTLESS AND POSSIBLY DELAY UPDATES
     
             SIMHALT
     
@@ -76,6 +78,7 @@ START:
             INCLUDE "SYSVARS.X68"
 
             END    START
+
 
 
 *~Font name~Fixedsys~
