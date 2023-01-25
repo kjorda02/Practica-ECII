@@ -34,7 +34,7 @@ SCOPLOT
     
             ; SET BACKGROUND COLOR
             MOVE.B  #81,D0
-            MOVE.W  #SCOFCOL,D1
+            MOVE.L  #SCOFCOL,D1
             TRAP    #15
     
             ; SET CURSOR POSITION FOR LINE 1
@@ -45,9 +45,12 @@ SCOPLOT
             ; PRINT FIRST LINE
             LEA     .TXT1,A1
             CLR.L   D1
-            MOVE.W  (PLASCORE),D1
+            MOVE.L  (SHVELY),D1
+            MOVE.W  #16,D0
+            ASR.L   D0,D1
             MOVE.B  #17,D0
             TRAP    #15
+            CLR.L   D1
     
             ; SET CURSOR POSITION FOR LINE 2
             MOVE.B  #11,D0
@@ -75,9 +78,11 @@ SCOPLOT
     
             RTS
 
-.TXT1       DC.B    'SCORE: ',0
+.TXT1       DC.B    'VELY: ',0
 .TXT2       DC.B    'TPS: ',0
 .TXT3       DC.B    'FPS: ',0
+
+
 
 
 *~Font name~Fixedsys~

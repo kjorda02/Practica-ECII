@@ -49,7 +49,7 @@ START:
             BEQ     .LOOP
             
             SUBQ.W  #1,(UPDINTCT)
-            ADDQ.W  #1,(UPDCYCCT)
+            ADDQ.W  #1,(UPDCYCCT)            ASL.L   D4,D1
             BRA     .UPDATE
 
 .UPDDONE    ; ALL UPDATES ARE UP TO DATE :)
@@ -62,6 +62,12 @@ START:
             ADDQ.W  #1,(SCRCYCCT)
 
 ; --- PLOT ---------------------------------------------------------------------
+            MOVE.W  #600,D0
+.TESTA:
+            MOVE.W  #-1,D1
+.TESTB:
+            ;DBRA    D1,.TESTB      
+            DBRA    D0,.TESTA
 
             JSR SCOPLOT
             JSR LINEPLOT
@@ -78,6 +84,7 @@ START:
             INCLUDE "SYSVARS.X68"
 
             END    START
+
 
 
 

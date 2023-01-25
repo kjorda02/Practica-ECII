@@ -27,7 +27,7 @@ COLTST
 ; START:        COLLISION WITH THIS LINE WILL START STOPWATCH
 ; STOP:         COLLISION WITH THIS LINE WILL STOP STOPWATCH
 ; ------------------------------------------------------------------------------
-            MOVEM.L D0-D7/A0,-(A7)
+            MOVEM.L D0-D6/A0,-(A7)
             
             MOVE.W  (NOFLINES),D6
             SUBQ.W  #1,D6
@@ -82,7 +82,8 @@ COL:
                     BEQ     .NOVCOL ; IF POSYUPD=0 -> NO COLLISION
 
                     JSR HANDLECOL   ; ELSE -> COLLISION!
-                    BRA .NOVCOL
+                    BCLR.L  #18,D2  ; AVOIDS DETECTING THE COLLISION TWICE
+                    BRA .NOHLTEST
         .SHONTOP:
                     ; SHPOSY > Y (SHIP IS ABOVE LINE)
                     BSET.L  #19,D2  ; SET POSY TO 1 AND TEST PREV VALUE
@@ -92,6 +93,8 @@ COL:
                     BEQ     .NOVCOL ; IF POSYUPD=0 -> NO COLLISION
                     
                     JSR HANDLECOL   ; ELSE -> COLLISION!
+                    BCLR.L  #18,D2  ; AVOIDS DETECTING THE COLLISION TWICE
+                    BRA .NOHLTEST
     .NOVCOL:
                 BSET.L  #18,D2  ; POSYUPD=1
                 JSR TESTVLT
@@ -115,7 +118,7 @@ COL:
                         ; Y<Y0 AND Y>=Y1
 
     .HLTEST:    ; HORIZONTAL LINE TEST:
-                ; D0-X0, D1-Y0, D2-X1, D3-Y1
+                ; D0=X0, D1=Y0, D2=X1, D3=Y1
                 MOVE.W  D2,D4
                 SUB.W   D0,D4   ; D4=X1-X0
                 
@@ -140,7 +143,8 @@ COL:
                     BEQ     .NOHCOL ; IF POSXUPD=0 -> NO COLLISION
                     
                     JSR HANDLECOL   ; ELSE -> COLLISION!
-                    BRA .NOHCOL
+                    BCLR.L  #18,D2  ; IN CASE VLTEST MARKED THIS SIDE OF THE LINE
+                    BRA .NOHLTEST
         .SHRIGHT:   
                     ; SHPOSX > X (SHIP IS TO THE RIGHT OF LINE)
                     BSET.L  #21,D2  ; SET POSX TO 1 AND TEST PREV VALUE
@@ -150,6 +154,8 @@ COL:
                     BEQ     .NOHCOL ; IF POSXUPD=0 -> NO COLLISION
                     
                     JSR HANDLECOL   ; ELSE -> COLLISION
+                    BCLR.L  #18,D2
+                    BRA .NOHLTEST
                     
         .NOHCOL:
                 BSET.L  #20,D2
@@ -168,12 +174,83 @@ COL:
                 ADDQ.W  #4,A0
                 DBRA D6,COL
             
-            MOVEM.L (A7)+,D0-D7/A0
+            MOVEM.L (A7)+,D0-D6/A0
             RTS
-            
+
+; ------------------------------------------------------------------------------
 HANDLECOL
-            ORI.L   #$FF000000,D2   
+; HANDLE COLLISION (IS CALLED BY COLTEST)
+; INPUT: D0.W=X0, D1.W=Y0, D2.W=X1, D3.W=Y1
+; OUTPUT: NONE
+; MODIFIES: NONE
+; [MAX DISTANCE BETWEEN POINTS (Lx and Ly) = 1023 (10 bits for Lx and Ly)]
+; Everything is divided by 2^5 to make the denominator fit in 16 bits
+; ------------------------------------------------------------------------------
+            MOVEM.L D0-D7,-(A7)
+            ;ORI.L  #$FF000000,D2
+            
+            ; NECESSARY FOR BOTH --------------------
+            SUB.W   D0,D2   ; D2=Lx
+            SUB.W   D1,D3   ; D3=Ly
+            MOVE.W  D2,D0
+            MULS    D3,D0   
+            ASR.L   #4,D0   ; D0=Lx*Ly*2^-4 (16 bits)
+            
+            MOVE.W  D2,D1
+            MULS    D2,D1 ;Lx^2
+            MOVE.W  D3,D4
+            MULS    D3,D4 ;Ly^2
+            MOVE.L  D1,D2
+            ADD.L   D4,D2
+            ASR.L   #5,D2   ; D2=((Lx^2)+(Ly^2))*2^-5  (16 bits)
+
+            SUB.L   D4,D1
+            ASR.L   #4,D1   ; D1=(Lx^2)-(Ly^2)*2^-4  (16 bits)
+            
+            MOVE.L  (SHVELY),D4
+            ; [-------- ---XXXXX . XXXXXXXX --------] SHVELY = Vy*2^16 (5 + 16 = 21 bits)
+            ASR.L   #8,D4
+            ; [-------- -------- ---XXXXX . XXXXXXXX] D4= Vy*2^8 (5 + 8 = 13 bits)
+            
+            MOVE.L  (SHVELX),D6
+            ASR.L   #8,D6   ; Same story as with Vy
+                            ; D6= Vx*2^8
+            
+            ; CALCULATE NEW X VELOCITY --------------------
+            MOVE.W  D4,D5
+            MULS    D0,D5   ; D5 = 2Vy(LxLy)*2^3  (1 + 5 + 20 + 3 = 29 bits)
+
+            MOVE.W  D6,D7
+            MULS    D1,D7
+            ASR.L   #1,D7   ; D7= Vx*((Lx^2)-(Ly^2))*2^3  (5 + 20 + 3 = 28 bits)
+            
+            ADD.L   D5,D7   ; D7= ( 2VyLxLy + Vx*((Lx^2)-(Ly^2)) )*2^3  ( 26.58 + 3 bits)
+            DIVS    D2,D7   ; D7= [( 2VyLxLy + Vx*((Lx^2)-(Ly^2)) )/((Lx^2)+(Ly^2))]*2^8 = Vx'*2^8
+            
+            ANDI.L  #$0000FFFF,D7   ; IMPORTANT
+            EXT.L   D7              ; ALSO IMPORTANT :(
+            ASL.L   #8,D7           ; D7 = Vx'*2^16
+            MOVE.L  D7,(SHVELX)
+            
+            ; CALCULATE NEW Y VELOCITY --------------------
+            MOVE.W  D6,D5
+            MULS    D0,D5   ; D5= 2Vx(LxLy)*2^3 (29 bits)
+            
+            MOVE.W  D4,D7
+            MULS    D1,D7
+            ASR.L   #1,D7   ; D7 = Vy((Lx^2)-(Ly^2))*2^3  (28 bits)
+            
+            SUB.L   D7,D5   ; D7 = (2Vx(LxLy) - [Vy((Lx^2)-(Ly^2)]))*2^3  ( 26 + 3 bits)
+            DIVS    D2,D5   ; D7 = [(2Vx(LxLy) - [Vy((Lx^2)-(Ly^2)]))/((Lx^2)+(Ly^2))]*2^8  = Vy'*2^8
+            
+            ANDI.L  #$0000FFFF,D5   ; IMPORTANT
+            EXT.L   D5
+            ASL.L   #8,D5           ; D5 = Vx'*2^16
+            MOVE.L  D5,(SHVELY)
+            
+            MOVEM.L (A7)+,D0-D7
             RTS
+
             
 TESTVLT     ; D4=Y
             MOVEM.L D0-D4,-(A7)
@@ -274,6 +351,7 @@ EPLOTLINE:
             RTS
         
         
+
 
 *~Font name~Fixedsys~
 *~Font size~18~
