@@ -40,9 +40,10 @@ COL:
                 MOVE.L  LINES(A0),D2  ; D2.W=X1, HIGH 16 BITS=WORD WITH CONTROL BITS
                 ADDQ.W  #4,A0
                 MOVE.W  LINES(A0),D3  ; D3=Y1
-                
-                BTST.L  #22,D2
-                BEQ     .NOHLTEST
+
+                ; LINE TEST ---------------------------------------------------
+.LINETEST:      BTST.L  #22,D2
+                BEQ     .LTESTEND
             
                 ; TEST HORIZONTAL INTERVAL ------
                 CMP.W   SHPOSX,D0
@@ -161,11 +162,11 @@ COL:
         .NOHCOL:
                 BSET.L  #20,D2
                 JSR TESTHLT
-                BRA .ENDD
+                BRA .LTESTEND
                 
     .NOHLTEST:
                 BCLR.L  #20,D2  ; POSXUPD=0
-    .ENDD:
+    .LTESTEND:
                 SUBQ.W  #4,A0
                 MOVE.L  D2,LINES(A0)
                 ADDQ.W  #4,A0
@@ -178,7 +179,7 @@ COL:
             MOVEM.L (A7)+,D0-D6/A0
             RTS
 
-; ------------------------------------------------------------------------------
+; -----------------------------------------------------------------------------
 HANDLECOL
 ; HANDLE COLLISION (IS CALLED BY COLTEST)
 ; INPUT: D0.W=X0, D1.W=Y0, D2.W=X1, D3.W=Y1
@@ -186,39 +187,11 @@ HANDLECOL
 ; MODIFIES: NONE
 ; [MAX DISTANCE BETWEEN POINTS (Lx and Ly) = 1023 (10 bits for Lx and Ly)]
 ; Everything is divided by 2^5 to make the denominator fit in 16 bits
-; ------------------------------------------------------------------------------
+; -----------------------------------------------------------------------------
             MOVEM.L D0-D7,-(A7)
             ADDQ.W  #1,COLCT
             
-            ; TEST DISTANCE TO CORNER ------------------------------------------
-            MOVE.L  (SHPOSX),D4
-            ASR.L   #8,D4
-            ASR.L   #8,D4
-            MOVE.L  (SHPOSY),D5
-            ASR.L   #8,D5
-            ASR.L   #8,D5
-            MOVE.W  D4,D6   ;D4,D6= SHPOSX
-            MOVE.W  D5,D7   ;D5,D7= SHPOSY
-            
-            ; X0,Y0
-            SUB.W   D0,D4   ;D4= X DISTANCE TO X0
-            SUB.W   D1,D5   ;D5= Y DISTANCE TO YO
-            MULS    D4,D4
-            MULS    D5,D5
-            ADD.L   D4,D5   ;D5= DISTANCE TO XO,YO VERTEX SQUARED
-            CMP.L   #CRADSQ,D5
-            BLO     .NOREFL
-            
-            ;X1,Y1
-            SUB.W   D2,D6   ;D4= X DISTANCE TO X1
-            SUB.W   D3,D7   ;D5= Y DISTANCE TO YO
-            MULS    D6,D6
-            MULS    D7,D7
-            ADD.L   D6,D7   ;D7= DISTANCE TO X1,Y1 VERTEX SQUARED
-            CMP.L   #CRADSQ,D7
-            BLO     .NOREFL
-            
-            ; REFLECTION -------------------------------------------------------
+            ; REFLECT VELOCITY ON COLLIDED LINE -------------------------------
             ; NECESSARY FOR BOTH --------------------
             SUB.W   D0,D2   ; D2=Lx
             SUB.W   D1,D3   ; D3=Ly
@@ -282,17 +255,8 @@ HANDLECOL
             
             ; WE ADD THE NEW VELOCITY TWICE BEFORE THE NEXT COLLISION TEST IN CASE THE REFLECTED
             ;  VELOCITY WAS NOT ENOUGH TO CROSS THE LINE AGAIN DUE TO ROUNDING ERROR
-            MOVE.L  (SHVELX),D0
-            ADD.L   D0,(SHPOSX)
-            MOVE.L  (SHVELY),D0
-            ADD.L   D0,(SHPOSY)
-            BRA .ENDCOL
+            JSR SHIPUPD
             
-            ; NEGATE (NO REFLECTION) ------------------------------------------
-.NOREFL:    NEG.L   (SHVELX)
-            NEG.L   (SHVELY)
-            
-.ENDCOL:
             MOVEM.L (A7)+,D0-D7
             RTS
 
@@ -364,7 +328,7 @@ LINEPLOT
             SUBQ.W  #1,D6
             MOVEA.L #0,A0
             MOVE.W  #16,D5
-PLOTLINE:
+PLOTLINE:        
                 MOVE.L  LINES(A0),D3    ; FIRST 2 WORDS CONTAINING BGR + CONTROL BITS
                 ADDQ.W  #4,A0
                 MOVE.L  LINES(A0),D4     ; LAST 2 WORDS CONTAINING X AND Y POSITIONS

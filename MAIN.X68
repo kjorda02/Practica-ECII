@@ -63,12 +63,6 @@ START:
             ADDQ.W  #1,(SCRCYCCT)
 
 ; --- PLOT ---------------------------------------------------------------------
-            MOVE.W  #600,D0
-.TESTA:
-            MOVE.W  #-1,D1
-.TESTB:
-            ;DBRA    D1,.TESTB      
-            DBRA    D0,.TESTA
 
             JSR SCOPLOT
             JSR LINEPLOT

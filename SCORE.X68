@@ -73,6 +73,58 @@ SCOPLOT
             MOVE.W  (FPS),D1
             MOVE.B  #17,D0
             TRAP    #15
+            
+            ; SET CURSOR POSITION FOR LINE 4
+            MOVE.B  #11,D0
+            MOVE.W  #$0104,D1
+            TRAP    #15
+            
+            ; PRINT FOURTH LINE
+            LEA     .TXT4,A1
+            CLR.L   D1
+            MOVE.W  (SHVELX),D1
+            EXT.L   D1
+            MOVE.B  #17,D0
+            TRAP    #15
+            
+            ; SET CURSOR POSITION FOR LINE 5
+            MOVE.B  #11,D0
+            MOVE.W  #$0105,D1
+            TRAP    #15
+            
+            ; PRINT FIFTH LINE
+            LEA     .TXT5,A1
+            CLR.L   D1
+            MOVE.W  (SHVELY),D1
+            EXT.L   D1
+            MOVE.B  #17,D0
+            TRAP    #15
+            
+            ; SET CURSOR POSITION FOR LINE 6
+            MOVE.B  #11,D0
+            MOVE.W  #$0106,D1
+            TRAP    #15
+            
+            ; PRINT SIXTH LINE
+            LEA     .TXT6,A1
+            CLR.L   D1
+            MOVE.W  (SHPOSX),D1
+            EXT.L   D1
+            MOVE.B  #17,D0
+            TRAP    #15
+            
+            ; SET CURSOR POSITION FOR LINE 7
+            MOVE.B  #11,D0
+            MOVE.W  #$0107,D1
+            TRAP    #15
+            
+            ; PRINT SEVENTH LINE
+            LEA     .TXT7,A1
+            CLR.L   D1
+            MOVE.W  (SHPOSY),D1
+            EXT.L   D1
+            MOVE.B  #17,D0
+            TRAP    #15
     
             MOVEM.L (A7)+,D0-D1/A1  ; RESTORE PREVIOUS REGISTER VALUES
     
@@ -81,6 +133,11 @@ SCOPLOT
 .TXT1       DC.B    'COLLISION COUNTER: ',0
 .TXT2       DC.B    'TPS: ',0
 .TXT3       DC.B    'FPS: ',0
+
+.TXT4       DC.B    'VELX: ',0
+.TXT5       DC.B    'VELY: ',0
+.TXT6       DC.B    'POSX: ',0
+.TXT7       DC.B    'POSY: ',0
 
 
 
