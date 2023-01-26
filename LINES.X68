@@ -9,7 +9,8 @@ LININIT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-        
+        CLR.W   COLCT
+        RTS
 
 ; ------------------------------------------------------------------------------
 COLTST
@@ -187,8 +188,37 @@ HANDLECOL
 ; Everything is divided by 2^5 to make the denominator fit in 16 bits
 ; ------------------------------------------------------------------------------
             MOVEM.L D0-D7,-(A7)
-            ;ORI.L  #$FF000000,D2
+            ADDQ.W  #1,COLCT
             
+            ; TEST DISTANCE TO CORNER ------------------------------------------
+            MOVE.L  (SHPOSX),D4
+            ASR.L   #8,D4
+            ASR.L   #8,D4
+            MOVE.L  (SHPOSY),D5
+            ASR.L   #8,D5
+            ASR.L   #8,D5
+            MOVE.W  D4,D6   ;D4,D6= SHPOSX
+            MOVE.W  D5,D7   ;D5,D7= SHPOSY
+            
+            ; X0,Y0
+            SUB.W   D0,D4   ;D4= X DISTANCE TO X0
+            SUB.W   D1,D5   ;D5= Y DISTANCE TO YO
+            MULS    D4,D4
+            MULS    D5,D5
+            ADD.L   D4,D5   ;D5= DISTANCE TO XO,YO VERTEX SQUARED
+            CMP.L   #CRADSQ,D5
+            BLO     .NOREFL
+            
+            ;X1,Y1
+            SUB.W   D2,D6   ;D4= X DISTANCE TO X1
+            SUB.W   D3,D7   ;D5= Y DISTANCE TO YO
+            MULS    D6,D6
+            MULS    D7,D7
+            ADD.L   D6,D7   ;D7= DISTANCE TO X1,Y1 VERTEX SQUARED
+            CMP.L   #CRADSQ,D7
+            BLO     .NOREFL
+            
+            ; REFLECTION -------------------------------------------------------
             ; NECESSARY FOR BOTH --------------------
             SUB.W   D0,D2   ; D2=Lx
             SUB.W   D1,D3   ; D3=Ly
@@ -218,13 +248,14 @@ HANDLECOL
             
             ; CALCULATE NEW X VELOCITY --------------------
             MOVE.W  D4,D5
-            MULS    D0,D5   ; D5 = 2Vy(LxLy)*2^3  (1 + 5 + 20 + 3 = 29 bits)
+            MULS    D0,D5
+            ;ASL.L   #2,D7   ; D5 = 2Vy(LxLy)*2^3  (1 + 5 + 20 + 3 = 29 bits)
 
             MOVE.W  D6,D7
             MULS    D1,D7
             ASR.L   #1,D7   ; D7= Vx*((Lx^2)-(Ly^2))*2^3  (5 + 20 + 3 = 28 bits)
             
-            ADD.L   D5,D7   ; D7= ( 2VyLxLy + Vx*((Lx^2)-(Ly^2)) )*2^3  ( 26.58 + 3 bits)
+            ADD.L   D5,D7   ; D7= ( 2VyLxLy + Vx*((Lx^2)-(Ly^2)) )*2^3  ( 26.58 + 3 = 29.58 bits )
             DIVS    D2,D7   ; D7= [( 2VyLxLy + Vx*((Lx^2)-(Ly^2)) )/((Lx^2)+(Ly^2))]*2^8 = Vx'*2^8
             
             ANDI.L  #$0000FFFF,D7   ; IMPORTANT
@@ -235,6 +266,7 @@ HANDLECOL
             ; CALCULATE NEW Y VELOCITY --------------------
             MOVE.W  D6,D5
             MULS    D0,D5   ; D5= 2Vx(LxLy)*2^3 (29 bits)
+            ;ASL.L   #2,D5
             
             MOVE.W  D4,D7
             MULS    D1,D7
@@ -248,6 +280,19 @@ HANDLECOL
             ASL.L   #8,D5           ; D5 = Vx'*2^16
             MOVE.L  D5,(SHVELY)
             
+            ; WE ADD THE NEW VELOCITY TWICE BEFORE THE NEXT COLLISION TEST IN CASE THE REFLECTED
+            ;  VELOCITY WAS NOT ENOUGH TO CROSS THE LINE AGAIN DUE TO ROUNDING ERROR
+            MOVE.L  (SHVELX),D0
+            ADD.L   D0,(SHPOSX)
+            MOVE.L  (SHVELY),D0
+            ADD.L   D0,(SHPOSY)
+            BRA .ENDCOL
+            
+            ; NEGATE (NO REFLECTION) ------------------------------------------
+.NOREFL:    NEG.L   (SHVELX)
+            NEG.L   (SHVELY)
+            
+.ENDCOL:
             MOVEM.L (A7)+,D0-D7
             RTS
 

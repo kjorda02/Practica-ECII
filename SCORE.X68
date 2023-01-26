@@ -45,7 +45,7 @@ SCOPLOT
             ; PRINT FIRST LINE
             LEA     .TXT1,A1
             CLR.L   D1
-            MOVE.L  (SHVELY),D1
+            MOVE.L  (COLCT),D1
             MOVE.W  #16,D0
             ASR.L   D0,D1
             MOVE.B  #17,D0
@@ -78,7 +78,7 @@ SCOPLOT
     
             RTS
 
-.TXT1       DC.B    'VELY: ',0
+.TXT1       DC.B    'COLLISION COUNTER: ',0
 .TXT2       DC.B    'TPS: ',0
 .TXT3       DC.B    'FPS: ',0
 

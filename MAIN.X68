@@ -1,6 +1,6 @@
 * ==============================================================================
 * Title      : Archivo principal del juego
-* Written by :
+* Written by : Krishna Jorda Jimenez
 * Date       :
 * Description:
 * ==============================================================================
@@ -28,6 +28,7 @@ START:
             JSR SYSINIT
             JSR SHIPINIT
             JSR SCOINIT
+            JSR LININIT
 
 .UPDATE
 
