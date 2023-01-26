@@ -63,11 +63,16 @@ START:
             ADDQ.W  #1,(SCRCYCCT)
 
 ; --- PLOT ---------------------------------------------------------------------
-
-            JSR SCOPLOT
             JSR LINEPLOT
             JSR SHIPPLOT
+            JSR FPSPLOT
+            JSR SCOPLOT
 
+            TST.W   (DEBUG)
+            BEQ     .NODEBUG
+            JSR DEBGPLOT
+            
+.NODEBUG
             TRAP    #0      ; UPDATE SCREEN
             
             BRA     .LOOP   ; WE DO NOT ALLOW PLOTTING MORE THAN 1 FRAME PER UPDATE
@@ -79,6 +84,7 @@ START:
             INCLUDE "SYSVARS.X68"
 
             END    START
+
 
 
 

@@ -160,7 +160,7 @@ KBDINIT
 ; ------------------------------------------------------------------------------
 KBDUPD
 ; UPDATE KEYBOARD INFO
-; [PAUSE|FIRE3|FIRE2|FIRE1|DOWN|RIGHT|UP|LEFT]
+; [e|a|x|t|DOWN|RIGHT|UP|LEFT]
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : D0-D3
@@ -169,7 +169,7 @@ KBDUPD
     
             ; READ FIRST 4 KEYS
             MOVE.B  #19,D0
-            MOVE.L  #KBDPAUSE<<24|KBDFIRE3<<16|KBDFIRE2<<8|KBDFIRE1, D1
+            MOVE.L  #KBDe<<24|KBDa<<16|KBDx<<8|KBDt, D1
             TRAP    #15
     
             ; CONVERT TO DESIRED FORMAT
@@ -206,6 +206,7 @@ KBDUPD
     
     
     
+
 
 
 *~Font name~Fixedsys~

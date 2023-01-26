@@ -36,6 +36,8 @@ PLASCORE    DS.W    1   ; PLAYER SCORE
 FRAMES      DS.W    1   ; FRAME COUNTER
 FPS         DS.W    1   ; LAST VALUE OF SCRCYCCT
 TPS         DS.W    1   ; LAST VALUE OF UPDCYCCT
+TIME        DS.W    1
+DEBUG       DS.W    1
 
                                 
 ; --- MAP RELATED VARIABLES ----------------------------------------------------
@@ -50,6 +52,7 @@ NOFLINES    DC.W    9
 
 ; --- COLLISIOPN RELATED VARIABLES
 COLCT       DC.W    1
+
 
 
 
