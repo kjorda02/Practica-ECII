@@ -10,6 +10,11 @@ SCOINIT
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             CLR.W   (DEBUG)
+            CLR.L   (STTIME)
+            CLR.W   (TIME)
+            MOVE.B  #8,D0
+            TRAP    #15
+            MOVE.L  D1,(STTIME)
             
             RTS
             
@@ -20,7 +25,15 @@ SCOUPD
 ; OUTPUT   :
 ; MODIFIES :
 ; ------------------------------------------------------------------------------
+            ; UPDATE TIME
+            TST.L   (STTIME)
+            BEQ .NOUTIME        ; IF WE HAVEN'T STARTED COUNTING, TIME= 0
+            MOVE.B  #8,D0
+            TRAP    #15
+            SUB.L   (STTIME),D1
+            MOVE.W  D1,(TIME)
             
+.NOUTIME:
             BTST.B  #5,(KBDEDGE)
             BEQ     .NOTDEBUG
             BTST.B  #5,(KBDVAL)

@@ -18,7 +18,7 @@ COLTST
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
-; [BBBBBBBB GGGGGGGG RRRRRRRR <DRAW><COLLISION><POSX><POSXUPD><POSY><POSYUPD><START><END> XXXXXXXX XXXXXXXX YYYYYYYY YYYYYYYY]
+; [B G R <DRAW><COLLISION><POSX><POSXUPD><POSY><POSYUPD><START><END> X X Y Y]
 ;
 ; DRAW:         SHOULD LINE BE DRAWN FROM PREVIOUS VERTEX TO CURRENT VERTEX?
 ; COLLISION:    SHOULD WE TEST FOR COLLISIONS AGAINST THIS LINE?
@@ -99,6 +99,8 @@ COL:
                     BRA .NOHLTEST
     .NOVCOL:
                 BSET.L  #18,D2  ; POSYUPD=1
+                TST.W   (DEBUG)
+                BEQ .VINTERVAL
                 JSR TESTVLT
                 BRA .VINTERVAL
     
@@ -161,6 +163,8 @@ COL:
                     
         .NOHCOL:
                 BSET.L  #20,D2
+                TST.W   (DEBUG)
+                BEQ .LTESTEND
                 JSR TESTHLT
                 BRA .LTESTEND
                 
@@ -189,8 +193,13 @@ HANDLECOL
 ; Everything is divided by 2^5 to make the denominator fit in 16 bits
 ; -----------------------------------------------------------------------------
             MOVEM.L D0-D7,-(A7)
-            ADDQ.W  #1,COLCT
             
+            BTST.L  #17,D2  ; IS IT START LINE?
+            BNE .STARTTIM
+            BTST.L  #16,D2  ; IS IT END LINE?
+            BNE .STOPTIM
+            
+            ADDQ.W  #1,COLCT            
             ; REFLECT VELOCITY ON COLLIDED LINE -------------------------------
             ; NECESSARY FOR BOTH --------------------
             SUB.W   D0,D2   ; D2=Lx
@@ -257,6 +266,10 @@ HANDLECOL
             ;  VELOCITY WAS NOT ENOUGH TO CROSS THE LINE AGAIN DUE TO ROUNDING ERROR
             JSR SHIPUPD
             
+.STARTTIM:
+
+.STOPTIM:
+            
             MOVEM.L (A7)+,D0-D7
             RTS
 
@@ -264,8 +277,18 @@ HANDLECOL
 TESTVLT     ; D4=Y
             MOVEM.L D0-D4,-(A7)
             
+            CMP.W   (SHPOSY),D4
+            BGE     .NOFILLY
+            MOVE.L  #$00800000,D1
+            BRA     .FILLY
+    .NOFILLY:  
+            MOVE.L  #$00000000,D1
+    .FILLY:           
+            MOVE.B  #81,D0
+            TRAP    #15
+      
             MOVE.L  #$00FFAA00,D1
-            MOVE.W  #80,D0
+            MOVE.B  #80,D0
             TRAP    #15
             
             MOVE.W  SHPOSX,D1   ; D1=X, D4=Y
@@ -292,6 +315,16 @@ TESTVLT     ; D4=Y
 TESTHLT     ; D4=X
             MOVEM.L D0-D4,-(A7)
             
+            CMP.W   (SHPOSX),D4
+            BGE     .NOFILLX
+            MOVE.L  #$00008000,D1
+            BRA .FILLX
+    .NOFILLX:
+            MOVE.L  #$00000000,D1
+    .FILLX:
+            MOVE.B  #81,D0
+            TRAP    #15
+            
             MOVE.L  #$00AAFF00,D1
             MOVE.W  #80,D0
             TRAP    #15
@@ -316,7 +349,7 @@ TESTHLT     ; D4=X
             RTS
 ; ------------------------------------------------------------------------------
 LINEPLOT
-; PLOT ALL LINES THE CAMERA'S POSITION
+; PLOT ALL LINES FROM THE CAMERA'S POSITION
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
@@ -360,6 +393,7 @@ EPLOTLINE:
             RTS
         
         
+
 
 
 *~Font name~Fixedsys~

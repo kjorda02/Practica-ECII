@@ -222,6 +222,17 @@ SHIPPLOT
             MOVE.W  (CAMPOSY),D2
             SUB.W   (SHFRONTY),D2
             TRAP    #15
+            
+            ; CENTER POINT
+            TST.W   (DEBUG)
+            BEQ     .NOCPT
+            MOVE.W  (SHPOSX),D1
+            SUB.W   (CAMPOSX),D1
+            MOVE.W  (CAMPOSY),D2
+            SUB.W   (SHPOSY),D2
+            MOVE.B  #82,D0
+            TRAP    #15
+.NOCPT:
 
             MOVEM.L (A7)+,D0-D2
 
@@ -229,6 +240,7 @@ SHIPPLOT
 
     
     
+
 
 
 
