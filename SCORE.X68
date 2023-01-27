@@ -13,6 +13,7 @@ SCOINIT
             CLR.L   (STTIME)
             CLR.W   (TIME)
             CLR.W   (CROSSED)
+            CLR.W   (EDITMODE)
             
             RTS
             
@@ -32,6 +33,7 @@ SCOUPD
             MOVE.W  D1,(TIME)
             
 .NOUTIME:
+            ; TOGGLE DEBUG
             BTST.B  #5,(KBDEDGE)
             BEQ     .NOTDEBUG
             BTST.B  #5,(KBDVAL)
@@ -44,6 +46,13 @@ SCOUPD
 .DEBUG0     CLR.W   (DEBUG)
 .NOTDEBUG   
 
+            ; TURN ON EDIT MODE
+            BTST.B  #4,(KBDEDGE)
+            BEQ .EDIT0
+            BTST.B  #4,(KBDVAL)
+            BEQ .EDIT0
+            MOVE.W  #1,(EDITMODE)
+.EDIT0:
             RTS
 
 ; ------------------------------------------------------------------------------
@@ -66,7 +75,7 @@ SCOPLOT
             
             ; SET CURSOR POSITION LINE 1 COL 32
             MOVE.B  #11,D0
-            MOVE.W  #$2001,D1
+            MOVE.W  #$1401,D1
             TRAP    #15
             
             ; PRINT INFO
@@ -76,7 +85,7 @@ SCOPLOT
             
             ; SET CURSOR POSITION LINE 1 COL 32
             MOVE.B  #11,D0
-            MOVE.W  #$2002,D1
+            MOVE.W  #$3001,D1
             TRAP    #15
             
             ; PRINT INFO

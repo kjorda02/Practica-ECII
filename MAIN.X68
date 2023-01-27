@@ -13,6 +13,7 @@
             INCLUDE "SCORE.X68"
             INCLUDE "RCTDATA.X68"
             INCLUDE "LINES.X68"
+            INCLUDE "EDITMENU.X68"
             
             DS.W    1   ; WORD ALIGNMENT
 START:
@@ -29,6 +30,7 @@ START:
             JSR SHIPINIT
             JSR SCOINIT
             JSR LININIT
+            JSR MENUINIT
 
 .UPDATE
 
@@ -36,12 +38,19 @@ START:
 
 ; READ INPUT DEVICES
             TRAP #1
+            TRAP #2
 
 ; UPDATE GAME LOGIC
-
+            TST.W   (EDITMODE)
+            BNE .EDITUPD
+            
             JSR SHIPUPD
             JSR SCOUPD
             JSR COLTST
+            BRA .UPDDONE
+.EDITUPD:
+            JSR MENUUPD
+
             BRA .UPDDONE
 
 ; --- SYNC ---------------------------------------------------------------------
@@ -64,16 +73,22 @@ START:
 
 ; --- PLOT ---------------------------------------------------------------------
             JSR LINEPLOT
-            JSR SHIPPLOT
             JSR FPSPLOT
+            
+            TST.W   (EDITMODE)
+            BNE .EDITPLOT
+            
+            JSR SHIPPLOT
             JSR SCOPLOT
 
             TST.W   (DEBUG)
-            BEQ     .NODEBUG
+            BEQ .FINPLOT
             JSR DEBGPLOT
-            
-.NODEBUG
-            TRAP    #0      ; UPDATE SCREEN
+            BRA .FINPLOT
+.EDITPLOT:
+            JSR MENUPLOT
+
+.FINPLOT:   TRAP    #0      ; UPDATE SCREEN
             
             BRA     .LOOP   ; WE DO NOT ALLOW PLOTTING MORE THAN 1 FRAME PER UPDATE
                             ; SINCE IT WOULD BE POINTLESS AND POSSIBLY DELAY UPDATES

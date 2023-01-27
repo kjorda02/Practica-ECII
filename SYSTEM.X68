@@ -10,9 +10,11 @@ SYSINIT
 ; ------------------------------------------------------------------------------
             JSR SCRINIT
             JSR KBDINIT
+            JSR MOUSINIT
     
             MOVE.L  #SCRPLOT,($80)  ; INSTALL SCRPLOT ON TRAP #0
             MOVE.L  #KBDUPD,($84)   ; INSTALL KBDUPD ON TRAP #1
+            MOVE.L  #MOUSUPD,($88)  ; INSTALL MOUSUPD ON TRAP #2
     
             ; Switch to user mode and return from subroutine
             MOVE.W  SR,-(A7)
@@ -163,7 +165,7 @@ KBDUPD
 ; [e|a|x|t|DOWN|RIGHT|UP|LEFT]
 ; INPUT    : NONE
 ; OUTPUT   : NONE
-; MODIFIES : D0-D3
+; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
             MOVEM.L D0-D3,-(A7)
     
@@ -201,8 +203,41 @@ KBDUPD
                 ROXL.B  #1,D2   ; SHIFT D2 PUTING IN THE BIT SAVED IN THE X FLAG
                 DBRA.W  D3,.LOOP
             RTS
-    
-    
+            
+; ------------------------------------------------------------------------------
+MOUSINIT
+; INIT MOUSE
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            CLR.W   (MOUSVAL)
+            RTS
+            
+; ------------------------------------------------------------------------------
+MOUSUPD
+; UPDATE MOUSE INFO
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : D0-D3
+; ------------------------------------------------------------------------------
+            MOVEM.L D0-D2,-(A7)
+
+            MOVE.B  #61,D0
+            MOVE.W  #2,D1
+            TRAP    #15 ;D0.B=BUTTONS, D1.L= YYYY XXXX
+            
+            ; COMPUTE (AND STORE) MOUSEDGE
+            MOVE.B  (MOUSVAL),D2    ; PREVIOUS VALUES
+            NOT.B   D2
+            AND.B   D0,D2
+            MOVE.B  D2,(MOUSEDGE)
+            
+            MOVE.B  D0,(MOUSVAL)    ; STORE BUTTON STATES
+            MOVE.W  
+            
+            MOVEM.L (A7)+,D0-D2
+            RTE
     
     
     
