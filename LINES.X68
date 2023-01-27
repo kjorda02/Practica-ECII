@@ -266,9 +266,26 @@ HANDLECOL
             ;  VELOCITY WAS NOT ENOUGH TO CROSS THE LINE AGAIN DUE TO ROUNDING ERROR
             JSR SHIPUPD
             
-.STARTTIM:
+            BRA .ENDHCOL
+.STARTTIM:  
+            CMP.W   #1,(CROSSED)
+            BEQ .KEEPTIME
+            MOVE.B  #8,D0
+            TRAP    #15
+            MOVE.L  D1,(STTIME)
+.KEEPTIME:  ADDQ.W  #1,(CROSSED)
+            BRA  .ENDHCOL
 
-.STOPTIM:
+.STOPTIM:   
+            MOVE.L  #0,(STTIME)
+            CMP.W   #1,(CROSSED)
+            BNE     .NOTVALID
+            
+            BRA .ENDHCOL
+.NOTVALID:  
+            MOVE.L  #0,(TIME)
+            CLR.W   (CROSSED)
+.ENDHCOL:
             
             MOVEM.L (A7)+,D0-D7
             RTS
@@ -279,7 +296,7 @@ TESTVLT     ; D4=Y
             
             CMP.W   (SHPOSY),D4
             BGE     .NOFILLY
-            MOVE.L  #$00800000,D1
+            MOVE.L  #$00F00000,D1
             BRA     .FILLY
     .NOFILLY:  
             MOVE.L  #$00000000,D1

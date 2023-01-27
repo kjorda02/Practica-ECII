@@ -12,9 +12,7 @@ SCOINIT
             CLR.W   (DEBUG)
             CLR.L   (STTIME)
             CLR.W   (TIME)
-            MOVE.B  #8,D0
-            TRAP    #15
-            MOVE.L  D1,(STTIME)
+            CLR.W   (CROSSED)
             
             RTS
             
@@ -206,6 +204,19 @@ DEBGPLOT
             EXT.L   D1
             MOVE.B  #17,D0
             TRAP    #15
+            
+            ; SET CURSOR POSITION FOR LINE 11
+            MOVE.B  #11,D0
+            MOVE.W  #$010B,D1
+            TRAP    #15
+            
+            ; PRINT SHPOSY
+            LEA     .TXT8,A1
+            CLR.L   D1
+            MOVE.W  (CROSSED),D1
+            EXT.L   D1
+            MOVE.B  #17,D0
+            TRAP    #15
     
             MOVEM.L (A7)+,D0-D1/A1  ; RESTORE PREVIOUS REGISTER VALUES
     
@@ -216,6 +227,7 @@ DEBGPLOT
 .TXT5       DC.B    'VELY: ',0
 .TXT6       DC.B    'POSX: ',0
 .TXT7       DC.B    'POSY: ',0
+.TXT8       DC.B    'CROSSED: ',0
 
 
 
