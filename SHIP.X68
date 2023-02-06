@@ -169,9 +169,9 @@ END:
             MOVE.W  (SHPOSX),(CAMPOSX)
             MOVE.W  (SHPOSY),(CAMPOSY)
             
-            ADD.W  #SCRHEIGH/2,(CAMPOSY) ; Offset the camera's position so that
-            SUB.W  #SCRWIDTH/2,(CAMPOSX) ; It no longer represents the upper left
-            ; Corner of the frame, but it's center
+            ADD.W  #SCRHEIGH/2,(CAMPOSY) ; Offset the camera's position since what's
+            SUB.W  #SCRWIDTH/2,(CAMPOSX) ; drawn is what's down and to the right of
+            ; the camera's position.
             
             MOVEM.L (A7)+,D0-D3/A0
             
@@ -240,6 +240,7 @@ SHIPPLOT
 
     
     
+
 
 
 

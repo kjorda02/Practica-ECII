@@ -224,17 +224,20 @@ MOUSUPD
             MOVEM.L D0-D2,-(A7)
 
             MOVE.B  #61,D0
-            MOVE.W  #2,D1
-            TRAP    #15 ;D0.B=BUTTONS, D1.L= YYYY XXXX
+            MOVE.W  #0,D1
+            TRAP    #15 ;D0.B=BUTTONS, D1.L= YY XX
             
             ; COMPUTE (AND STORE) MOUSEDGE
             MOVE.B  (MOUSVAL),D2    ; PREVIOUS VALUES
             NOT.B   D2
             AND.B   D0,D2
-            MOVE.B  D2,(MOUSEDGE)
+            MOVE.B  D2,(MOUSEDGE)   ; STORE BUTTON EDGE STATES
             
             MOVE.B  D0,(MOUSVAL)    ; STORE BUTTON STATES
-            MOVE.W  
+            MOVE.W  D1,(MOUSPOSX)   ; STORE X-COORDINATE
+            ASR.L   #8,D1
+            ASR.L   #8,D1
+            MOVE.W  D1,(MOUSPOSY)   ; STORE Y-COORDINATE
             
             MOVEM.L (A7)+,D0-D2
             RTE

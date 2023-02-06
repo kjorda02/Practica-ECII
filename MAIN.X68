@@ -14,6 +14,7 @@
             INCLUDE "RCTDATA.X68"
             INCLUDE "LINES.X68"
             INCLUDE "EDITMENU.X68"
+            INCLUDE "MAPEDIT.X68"
             
             DS.W    1   ; WORD ALIGNMENT
 START:
@@ -31,6 +32,7 @@ START:
             JSR SCOINIT
             JSR LININIT
             JSR MENUINIT
+            JSR EDITINIT
 
 .UPDATE
 
@@ -49,7 +51,9 @@ START:
             JSR COLTST
             BRA .UPDDONE
 .EDITUPD:
+            JSR EDITUPD
             JSR MENUUPD
+            JSR PANMAP
 
             BRA .UPDDONE
 
@@ -86,6 +90,7 @@ START:
             JSR DEBGPLOT
             BRA .FINPLOT
 .EDITPLOT:
+            JSR PANMAP
             JSR MENUPLOT
 
 .FINPLOT:   TRAP    #0      ; UPDATE SCREEN

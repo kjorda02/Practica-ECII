@@ -12,8 +12,8 @@ KBDEDGE     DS.B    1   ; KEY EDGE
 
 MOUSVAL     DS.B    1 
 MOUSEDGE    DS.B    1
-MOUSPOSX    DS.B    1
-MOUSPOSY    DS.B    1
+MOUSPOSX    DS.W    1
+MOUSPOSY    DS.W    1
 
 ; --- SCREEN INTERRUPT RELATED VARIABLES ---------------------------------------
 ;[CTRL,ALT,SHIFT,DOUBLE,MIDDLE,RIGHT,LEFT]
