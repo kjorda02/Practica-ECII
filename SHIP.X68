@@ -9,7 +9,7 @@ SHIPINIT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
-            CLR.B   SHANGL
+            MOVE.B  #192,SHANGL
             MOVE.W  #0,(SHPOSY) ; Intialize ship at 0,0
             MOVE.W  #0,(SHPOSX)
             MOVE.W  #0,(CAMPOSY) ; Initialize camera at 0,0
@@ -48,7 +48,7 @@ SHIPUPD
             MOVE.B  (SHANGL),D0
             MULU    #2,D0               ; IMPORTANTE
             MOVE.W  D0,A0
-            MOVE.W  RCTSINTB(A0),D0     ; SIN(SHIPANGL)*2^8
+            MOVE.W  RCTSINTB(A0),D0     1; SIN(SHIPANGL)*2^8
             MOVE.W  RCTCOSTB(A0),D1     ; COS(SHIPANGL)*2^8
         
             ; NOSE POINT (SHIPFROXV AND SHIPFROYV)
@@ -240,6 +240,7 @@ SHIPPLOT
 
     
     
+
 
 
 

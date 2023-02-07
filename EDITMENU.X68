@@ -35,6 +35,8 @@ MENUPLOT
 ; OUTPUT   : NONE
 ; MODIFIES : NONE
 ; ------------------------------------------------------------------------------
+            MOVEM.L D0-D4/A1,-(A7)
+
             ; DRAW BACKGROUND RECTANGLE
             MOVE.W  #120,D1
             MOVE.W  #10,D2
@@ -116,7 +118,21 @@ MENUPLOT
             LEA     .INFO7,A1
             MOVE.B  #14,D0
             TRAP    #15
+            
+            ; PROVISIONAL (SET PEN COLOR)
+            MOVE.B  #80,D0
+            MOVE.L  #$00FFFFFF,D1
+            TRAP    #15
+            
+            ; PROVISIONAL (DRAW LINE)
+            MOVE.B  #84,D0
+            MOVE.W  #380,D1
+            MOVE.W  #23,D2
+            MOVE.W  #970,D3
+            MOVE.W  #23,D4
+            TRAP    #15
 
+            MOVEM.L (A7)+,D0-D4/A1
             RTS
 
 .INFO1      DC.B    '(t) Toggle editor mode',0
@@ -129,6 +145,7 @@ MENUPLOT
             DS.W    1
             
             
+
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~

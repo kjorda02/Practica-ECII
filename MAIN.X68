@@ -63,7 +63,7 @@ START:
             BEQ     .LOOP
             
             SUBQ.W  #1,(UPDINTCT)
-            ADDQ.W  #1,(UPDCYCCT)            ASL.L   D4,D1
+            ADDQ.W  #1,(UPDCYCCT)
             BRA     .UPDATE
 
 .UPDDONE    ; ALL UPDATES ARE UP TO DATE :)
@@ -104,6 +104,7 @@ START:
             INCLUDE "SYSVARS.X68"
 
             END    START
+
 
 
 

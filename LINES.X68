@@ -291,7 +291,7 @@ HANDLECOL
             RTS
 
             
-TESTVLT     ; D4=Y
+TESTVLT     ; D4=Y ------------------------------------------------------------
             MOVEM.L D0-D4,-(A7)
             
             CMP.W   (SHPOSY),D4
@@ -329,7 +329,7 @@ TESTVLT     ; D4=Y
             MOVEM.L (A7)+,D0-D4
             RTS
             
-TESTHLT     ; D4=X
+TESTHLT     ; D4=X ------------------------------------------------------------
             MOVEM.L D0-D4,-(A7)
             
             CMP.W   (SHPOSX),D4
@@ -410,6 +410,7 @@ EPLOTLINE:
             RTS
         
         
+
 
 
 

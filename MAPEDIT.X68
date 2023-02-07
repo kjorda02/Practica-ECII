@@ -26,7 +26,7 @@ EDITUPD
             ; CALCULATE WHERE THE MOUSE'S SCREEN POSITION FALLS ON THE MAP
             MOVE.W  (CAMPOSX),(MOUSPOSXA)
             MOVE.W  (MOUSPOSX),D0
-            ADD.W   D0,(MOUSPOSXA)
+            ADD.W   D0,(MOUSPOSXA) 
             
             MOVE.W  (CAMPOSY),(MOUSPOSYA)
             MOVE.W  (MOUSPOSY),D0
@@ -134,6 +134,7 @@ PLOTEDIT
             
 
             RTS
+
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~

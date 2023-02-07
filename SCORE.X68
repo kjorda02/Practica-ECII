@@ -26,7 +26,7 @@ SCOUPD
 ; ------------------------------------------------------------------------------
             ; UPDATE TIME
             TST.L   (STTIME)
-            BEQ .NOUTIME        ; IF WE HAVEN'T STARTED COUNTING, TIME= 0
+            BEQ     .NOUTIME        ; IF WE HAVEN'T STARTED COUNTING, TIME= 0
             MOVE.B  #8,D0
             TRAP    #15
             SUB.L   (STTIME),D1
@@ -48,9 +48,9 @@ SCOUPD
 
             ; TURN ON EDIT MODE
             BTST.B  #4,(KBDEDGE)
-            BEQ .EDIT0
+            BEQ     .EDIT0
             BTST.B  #4,(KBDVAL)
-            BEQ .EDIT0
+            BEQ     .EDIT0
             MOVE.W  #1,(EDITMODE)
 .EDIT0:
             RTS
@@ -262,6 +262,7 @@ DEBGPLOT
 .TXT6       DC.B    'POSX: ',0
 .TXT7       DC.B    'POSY: ',0
 .TXT8       DC.B    'CROSSED: ',0
+
 
 
 
