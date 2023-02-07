@@ -57,14 +57,14 @@ SCOUPD
 
 ; ------------------------------------------------------------------------------
 SCOPLOT
-; PLOT THE FPS AND TPS
+; PLOT THE CURRENT TIME TAKEN AND SOME INFO
 ; INPUT    : NONE
 ; OUTPUT   : NONE
 ; MODIFIES : D0-D1/A1
 ; ------------------------------------------------------------------------------
             ; SET CURSOR POSITION LINE 1
             MOVE.B  #11,D0
-            MOVE.W  #$0104,D1
+            MOVE.W  #$0107,D1
             TRAP    #15
             
             ; PRINT TIME
@@ -113,29 +113,54 @@ FPSPLOT
             MOVE.L  #SCOFCOL,D1
             TRAP    #15
             
-            ; SET CURSOR POSITION LINE 1
+            ; SET CURSOR POSITION
             MOVE.B  #11,D0
             MOVE.W  #$0101,D1
             TRAP    #15
-    
+            
+            ; PRINT GOAL TPS
+            LEA     .GTPS,A1
+            MOVE.W  #UPDTPS,D1
+            MOVE.B  #17,D0
+            TRAP    #15
+            
+            ; SET CURSOR POSITION
+            MOVE.B  #11,D0
+            MOVE.W  #$0102,D1
+            TRAP    #15
+            
             ; PRINT FPS
+            LEA     .GFPS,A1
+            MOVE.W  #SCRFPS,D1
+            MOVE.B  #17,D0
+            TRAP    #15
+            
+            ; SET CURSOR POSITION
+            MOVE.B  #11,D0
+            MOVE.W  #$0104,D1
+            TRAP    #15
+    
+            ; PRINT TPS
             LEA     .TPS,A1
             MOVE.W  (TPS),D1
             MOVE.B  #17,D0
             TRAP    #15
             
-            ; SET CURSOR POSITION FOR LINE 2
+            ; SET CURSOR POSITION
             MOVE.B  #11,D0
-            MOVE.W  #$0102,D1
+            MOVE.W  #$0105,D1
             TRAP    #15
             
-            ; PRINT TPS
+            ; PRINT FPS
             LEA     .FPS,A1
             MOVE.W  (FPS),D1
             MOVE.B  #17,D0
             TRAP    #15
             
             RTS
+
+.GTPS       DC.B    'GOAL TPS: ',0
+.GFPS       DC.B    'GOAL FPS: ',0
             
 .TPS        DC.B    'TPS: ',0
 .FPS        DC.B    'FPS: ',0
@@ -150,9 +175,9 @@ DEBGPLOT
     
             MOVEM.L D0-D1/A1,-(A7)  ; SAVE REGISTER VALUES
     
-            ; SET CURSOR POSITION FOR LINE 6
+            ; SET CURSOR POSITION
             MOVE.B  #11,D0
-            MOVE.W  #$0106,D1
+            MOVE.W  #$0109,D1
             TRAP    #15
     
             ; PRINT COLCT
@@ -162,9 +187,9 @@ DEBGPLOT
             MOVE.B  #17,D0
             TRAP    #15
             
-            ; SET CURSOR POSITION FOR LINE 7
+            ; SET CURSOR POSITION
             MOVE.B  #11,D0
-            MOVE.W  #$0107,D1
+            MOVE.W  #$010A,D1
             TRAP    #15
             
             ; PRINT SHVELX
@@ -175,9 +200,9 @@ DEBGPLOT
             MOVE.B  #17,D0
             TRAP    #15
             
-            ; SET CURSOR POSITION FOR LINE 8
+            ; SET CURSOR POSITION
             MOVE.B  #11,D0
-            MOVE.W  #$0108,D1
+            MOVE.W  #$010B,D1
             TRAP    #15
             
             ; PRINT SHVELY
@@ -188,9 +213,9 @@ DEBGPLOT
             MOVE.B  #17,D0
             TRAP    #15
             
-            ; SET CURSOR POSITION FOR LINE 9
+            ; SET CURSOR POSITION
             MOVE.B  #11,D0
-            MOVE.W  #$0109,D1
+            MOVE.W  #$010C,D1
             TRAP    #15
             
             ; PRINT SHPOSX
@@ -201,9 +226,9 @@ DEBGPLOT
             MOVE.B  #17,D0
             TRAP    #15
             
-            ; SET CURSOR POSITION FOR LINE 10
+            ; SET CURSOR POSITION
             MOVE.B  #11,D0
-            MOVE.W  #$010A,D1
+            MOVE.W  #$010D,D1
             TRAP    #15
             
             ; PRINT SHPOSY
@@ -214,9 +239,9 @@ DEBGPLOT
             MOVE.B  #17,D0
             TRAP    #15
             
-            ; SET CURSOR POSITION FOR LINE 11
+            ; SET CURSOR POSITION
             MOVE.B  #11,D0
-            MOVE.W  #$010B,D1
+            MOVE.W  #$010E,D1
             TRAP    #15
             
             ; PRINT SHPOSY
@@ -237,6 +262,7 @@ DEBGPLOT
 .TXT6       DC.B    'POSX: ',0
 .TXT7       DC.B    'POSY: ',0
 .TXT8       DC.B    'CROSSED: ',0
+
 
 
 

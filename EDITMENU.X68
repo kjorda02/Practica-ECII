@@ -106,6 +106,16 @@ MENUPLOT
             EXT.L   D1
             MOVE.B  #17,D0
             TRAP    #15
+            
+            ; MOVE CURSOR
+            MOVE.B  #11,D0
+            MOVE.W  #$2505,D1
+            TRAP    #15
+            
+            ; PRINT INFO
+            LEA     .INFO7,A1
+            MOVE.B  #14,D0
+            TRAP    #15
 
             RTS
 
@@ -115,6 +125,7 @@ MENUPLOT
 .INFO4      DC.B    '(e) Move selected vertex',0
 .INFO5      DC.B    'X: ',0
 .INFO6      DC.B    'Y: ',0
+.INFO7      DC.B    'RIGHT CICK TO MOVE AROUND',0
             DS.W    1
             
             

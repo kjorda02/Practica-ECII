@@ -34,6 +34,7 @@ EDITUPD
             
             MOVE.L  (A7)+,D0
             RTS
+
 ; ------------------------------------------------------------------------------
 PANMAP
 ; ALLOWS MOVING AROUND THE MAP USING RIGHT CLICK BUTTON
@@ -84,7 +85,55 @@ PANMAP
             MOVE.L  (A7)+,D0
             RTS
             
+; ------------------------------------------------------------------------------
+SELECT
+; ALLOWS SELECTING VERTICES BY DRAWING A RECTANGLE WITH THE RIGHT MOUSE BUTTON
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            TST.B   (MOUSBUSY)
+            BEQ     .NOBUSY
+            BTST.B  #1,(MOUSBUSY)
+            BEQ     .ENDSEL
+.NOBUSY:    
             
+            BTST.B  #0,(MOUSEDGE)
+            BEQ     .NOEDGE    
+            BTST.B  #0,(MOUSVAL)
+            BEQ     .SELBUP
+.SELBDOWN:
+            MOVE.W  (MOUSPOSX),(POINT1X)
+            MOVE.W  (MOUSPOSY),(POINT1Y)
+
+            BSET.B  #1,(MOUSBUSY)
+            BRA     .ENDSEL
+.SELBUP:
+            CLR.B   (MOUSBUSY)
+            BRA     .ENDSEL
+.NOEDGE:
+            BTST.B  #1,(MOUSVAL)
+            BEQ     .ENDSEL
+            
+            JSR CALCSEL
+.ENDSEL:
+            RTS
+
+
+CALCSEL ; ACTUALLY FIGURES OUT WHICH VERTEX SHOULD BE SELECTED -----------------
+
+            RTS
+            
+; ------------------------------------------------------------------------------
+PLOTEDIT
+; PLOTS THINGS LIKE SELECTION RECTANGLE, SQUARE AROUND THE SELECTED VERTEX, ETC
+; INPUT    : NONE
+; OUTPUT   : NONE
+; MODIFIES : NONE
+; ------------------------------------------------------------------------------
+            
+
+            RTS
 *~Font name~Fixedsys~
 *~Font size~18~
 *~Tab type~1~
